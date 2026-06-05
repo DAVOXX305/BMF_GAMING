@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="BMF_GAMING — Le guide ultime pour tous les gamers"/>
+
+  <!-- ═══ SÉCURITÉ — Content Security Policy ═══ -->
+  <meta http-equiv="Content-Security-Policy"
+    content="
+      default-src 'self';
+      script-src 'self' 'unsafe-inline';
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com;
+      img-src 'self' data: https:;
+      connect-src 'self';
+      frame-ancestors 'none';
+    "/>
+  <meta http-equiv="X-Content-Type-Options" content="nosniff"/>
+  <meta http-equiv="X-Frame-Options" content="DENY"/>
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin"/>
+
+  <title>BMF_GAMING — Le Guide des Gamers</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Russo+One&family=Exo+2:wght@300;400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- BARRE ANNONCE -->
+  <div class="annonce-bar">
+    <marquee behavior="scroll" direction="left" scrollamount="4">
+      🔥 NOUVEAU — Guide Ascension 4 Sailor Piece &nbsp;|&nbsp;
+      ⚡ Codes Blox Fruits mis à jour &nbsp;|&nbsp;
+      🎯 Tier List Fortnite Saison actuelle &nbsp;|&nbsp;
+      🌸 Build Hutao Genshin Impact &nbsp;|&nbsp;
+      ⛏ Seeds Minecraft 2026 disponibles &nbsp;|&nbsp;
+      ⚔ Guide TH16 Clash of Clans &nbsp;|&nbsp;
+      🔥 NOUVEAU — Guide Ascension 4 Sailor Piece
+    </marquee>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <a href="#accueil" class="logo">BMF<span>_GAMING</span></a>
+    <div class="burger" id="burger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#accueil"  class="nav-link">🏠 Accueil</a></li>
+      <li><a href="#roblox"   class="nav-link">🟥 Roblox</a></li>
+      <li><a href="#jeux"     class="nav-link">🎮 Jeux</a></li>
+      <li><a href="#guides"   class="nav-link">📖 Guides</a></li>
+      <li><a href="#tierlist" class="nav-link">🏆 Tier List</a></li>
+      <li><a href="#codes"    class="nav-link">🎁 Codes</a></li>
+      <li><a href="#news"     class="nav-link">🔥 News</a></li>
+      <li><a href="#contact"  class="nav-link">📩 Contact</a></li>
+    </ul>
+    <a href="#contact" class="btn-nav">REJOINDRE</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="accueil">
+    <div class="hero-content">
+      <div class="hero-badge">⚔ LE GUIDE ULTIME DES GAMERS ⚔</div>
+      <h1 class="hero-titre">BMF<span>_GAMING</span></h1>
+      <p class="hero-slogan">Guides • Tips • Tier Lists • Codes Gratuits</p>
+      <p class="hero-desc">
+        Le meilleur endroit pour progresser sur <strong>Roblox</strong>
+        (Sailor Piece, Blox Fruits, Anime Adventures et plus),
+        <strong>Fortnite</strong>, <strong>Call of Duty</strong>,
+        <strong>Minecraft</strong>, <strong>Clash of Clans</strong>,
+        <strong>Genshin Impact</strong>, <strong>Among Us</strong> et bien plus.
+      </p>
+      <div class="hero-btns">
+        <a href="#guides" class="btn-primary">📖 VOIR LES GUIDES</a>
+        <a href="#roblox" class="btn-ghost">🟥 SECTION ROBLOX</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-nombre" data-target="500">0</span>
+          <span class="stat-label">Guides</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-nombre" data-target="15">0</span>
+          <span class="stat-label">Jeux couverts</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-nombre" data-target="8500">0</span>
+          <span class="stat-label">Gamers</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-nombre" data-target="200">0</span>
+          <span class="stat-label">Codes actifs</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visuel">
+      <div class="hero-cercle cercle-1"></div>
+      <div class="hero-cercle cercle-2"></div>
+      <div class="hero-cercle cercle-3"></div>
+      <div class="hero-emoji"></div>
+    </div>
+  </section>
+
+  <!-- ROBLOX -->
+  <section class="section roblox-section" id="roblox">
+    <div class="section-header">
+      <span class="section-tag">// UNIVERS ROBLOX</span>
+      <h2>🟥 <span>Roblox</span> — Tous les Jeux</h2>
+      <p>Guides, tips, tier lists et codes gratuits pour chaque jeu Roblox.</p>
+    </div>
+    <div class="jeux-grid">
+
+      <div class="jeu-card">
+        <div class="jeu-icon">⛵</div>
+        <h3>Sailor Piece</h3>
+        <p>Guide Ascension 4, farming boss Alucard & Aizen. Drops et stratégies optimales.</p>
+        <div class="card-tags">
+          <span class="tag guide">Guide</span>
+          <span class="tag avance">Avancé</span>
+        </div>
+        <div class="card-progression">
+          <span>Contenu</span>
+          <div class="barre-prog"><div class="barre-fill" style="--largeur:95%"></div></div>
+          <span>95%</span>
+        </div>
+        <button class="btn-card" onclick="ouvrirGuide('sailor-piece')">VOIR LE GUIDE →</button>
+      </div>
+
+      <div class="jeu-card">
+        <div class="jeu-icon">🍎</div>
+        <h3>Blox Fruits</h3>
+        <p>Meilleurs fruits, grinding spots, tier list complète et codes actifs.</p>
+        <div class="card-tags">
+          <span class="tag tierlist">Tier List</span>
+          <span class="tag codes">Codes</span>
+        </div>
+        <div class="card-progression">
+          <span>Contenu</span>
+          <div class="barre-prog"><div class="barre-fill" style="--largeur:90%"></div></div>
+          <span>90%</span>
+        </div>
+        <button class="btn-card" onclick="ouvrirGuide('blox-fruits')">VOIR LE GUIDE →</button>
+      </div>
+
+      <div class="jeu-card">
+        <div class="jeu-icon">🌟</div>
+        <h3>Anime Adventures</h3>
+        <p>Meilleures unités, stratégies de défense, tier list et codes actifs.</p>
+        <div class="card-tags">
+          <span class="tag tierlist">Tier List</span>
+          <span class="tag codes">Codes</span>
+        </div>
+        <div class="card-progression">
+          <span>Contenu</span>
+          <div class="barre-prog"><div class="barre-fill" style="--largeur:80%"></div></div>
+          <span>80%</span>
+        </div>
+        <button class="btn-card" onclick="ouvrirGuide('anime-adventures')">VOIR LE GUIDE →</button>
+      </div>
+
+      <div class="jeu-card">
+        <div class="jeu-icon">🐾</div>
+        <h3>Pet Simulator X</h3>
+        <p>Meilleurs pets, zones de farm, valeurs d'échange et codes gratuits.</p>
+        <div class="card-tags">
+          <span class="tag codes">Codes</span>
+          <span class="tag guide">Guide</span>
+        </div>
+        <div class="card-progression">
+          <span>Contenu</span>
+          <div class="barre-prog"><div class="barre-fill" style="--largeur:75%"></div></div>
+          <span>75%</span>
+        </div>
+        <button class="btn-card" onclick="ouvrirGuide('pet-sim')">VOIR LE GUIDE →</button>
+      </div>
+
+      <div class="jeu-card">
+        <div class="jeu-icon">🏙</div>
+        <h3>Da Hood</h3>
+        <p>Tips de survie, meilleures armes et stratégies pour dominer.</p>
+        <div class="card-tags">
+          <span class="tag tips">Tips</span>
+          <span class="tag avance">Avancé</span>
+        </div>
+        <div class="card-progression">
+          <span>Contenu</span>
+          <div class="barre-prog"><div class="barre-fill" style="--largeur:70%"></div></div>
+          <span>70%</span>
+        </div>
+        <button class="btn-card" onclick="ouvrirGuide('da-hood')">VOIR LE GUIDE →</button>
+      </div>
+
+      <div class="jeu-card">
+        <div class="jeu-icon">🏠</div>
+        <h3>Brookhaven</h3>
+        <p>Secrets cachés, astuces de roleplay et codes actifs.</p>
+        <div class="card-tags">
+          <span class="tag codes">Codes</span>
+          <span class="tag tips">Secrets</span>
+        </div>
+        <div class="card-progression">
+          <span>Contenu</span>
+          <div class="barre-prog"><div class="barre-fill" style="--largeur:65%"></div></div>
+          <span>65%</span>
+        </div>
+        <button class="btn-card" onclick="ouvrirGuide('brookhaven')">VOIR LE GUIDE →</button>
+      </div>
+
+      <div class="jeu-card">
+        <div class="jeu-icon">🐣</div>
+        <h3>Adopt Me</h3>
+        <p>Pets rares, trading tips, valeurs du marché et événements.</p>
+        <div class="card-tags">
+          <span class="tag guide">Guide</span>
+          <span class="tag tips">Trading</span>
+        </div>
+        <div class="card-progression">
+          <span>Contenu</span>
+          <div class="barre-prog"><div class="barre-fill" style="--largeur:60%"></div></div>
+          <span>60%</span>
+        </div>
+        <button class="btn-card" onclick="ouvrirGuide('adopt-me')">VOIR LE GUIDE →</button>
+      </div>
+
+      <div class="jeu-card coming-soon">
+        <div class="jeu-icon">➕</div>
+        <h3>Bientôt...</h3>
+        <p>Nouveaux jeux Roblox ajoutés régulièrement par BMF_GAMING.</p>
+        <div class="card-tags"><span class="tag">Coming Soon</span></div>
+        <button class="btn-card" onclick="document.querySelector('#contact').scrollIntoView({behavior:'smooth'})">SUGGÉRER →</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- AUTRES JEUX -->
+  <section class="section jeux-section" id="jeux">
+    <div class="section-header">
+      <span class="section-tag">// AUTRES PLATEFORMES</span>
+      <h2>🎮 Autres <span>Jeux</span></h2>
+      <p>Guides et stratégies pour les plus grands jeux en dehors de Roblox.</p>
+    </div>
+    <div class="jeux-grid">
+
+      <div class="jeu-card">
+        <div class="jeu-icon">🎯</div>
+        <h3>Fortnite</h3>
+        <p>Builds compétitifs, strats ranked, tier list des armes.</p>
+        <div class="card-tags">
+          <span class="tag guide">Guide</span>
+          <span class="tag tierlist">Tier List</span>
+        </div>
+        <div class="card-progression">
+          <span>Contenu</span>
+          <div class="barre-prog"><div class="barre-fill" style="--largeur:85%"></div></div>
+          <span>85%</span>
+        </div>
+        <button class="btn-card" onclick="ouvrirGuide('fortnite')">VOIR LE GUIDE →</button>
+      </div>
+
+      <div class="jeu-card">
+        <div class="jeu-icon">🔫</div>
+        <h3>Call of Duty</h3>
+        <p>Meilleurs loadouts, stratégies par map et tips ranked.</p>
+        <div class="card-tags">
+          <span class="tag guide">Guide</span>
+          <span class="tag tips">Loadouts</span>
+        </div>
+        <div class="card-progression">
+          <span>Contenu</span>
+          <div class="barre-prog"><div class="barre-fill" style="--largeur:80%"></div></div>
+          <span>80%</span>
+        </div>
+        <button class="btn-card" onclick="ouvrirGuide('cod')">VOIR LE GUIDE →</button>
+      </div>
+
+      <div class="jeu-card">
+        <div class="jeu-icon">⛏</div>
+        <h3>Minecraft</h3>
+        <p>Builds épiques, meilleures seeds 2026 et guide survie.</p>
+        <div class="card-tags">
+          <span class="tag guide">Guide</span>
+          <span class="tag debutant">Débutant</span>
+        </div>
+        <div class="card-progression">
+          <span>Contenu</span>
+          <div class="barre-prog"><div class="barre-fill" style="--largeur:88%"></div></div>
+          <span>88%</span>
+        </div>
+        <button class="btn-card" onclick="ouvrirGuide('minecraft')">VOIR LE GUIDE →</button>
+      </div>
+
+      <div class="jeu-card">
+        <div class="jeu-icon">⚔</div>
+        <h3>Clash of Clans</h3>
+        <p>Attaques, bases défensives et stratégies Clan Wars.</p>
+        <div class="card-tags">
+          <span class="tag guide">Guide</span>
+          <span class="tag avance">Stratégie</span>
+        </div>
+        <div class="card-progression">
+          <span>Contenu</span>
+          <div class="barre-prog"><div class="barre-fill" style="--largeur:75%"></div></div>
+          <span>75%</span>
+        </div>
+        <button class="btn-card" onclick="ouvrirGuide('coc')">VOIR LE GUIDE →</button>
+      </div>
+
+      <div class="jeu-card">
+        <div class="jeu-icon">🌸</div>
+        <h3>Genshin Impact</h3>
+        <p>Builds personnages, tier list et compositions d'équipe.</p>
+        <div class="card-tags">
+          <span class="tag tierlist">Tier List</span>
+          <span class="tag guide">Builds</span>
+        </div>
+        <div class="card-progression">
+          <span>Contenu</span>
+          <div class="barre-prog"><div class="barre-fill" style="--largeur:82%"></div></div>
+          <span>82%</span>
+        </div>
+        <button class="btn-card" onclick="ouvrirGuide('genshin')">VOIR LE GUIDE →</button>
+      </div>
+
+      <div class="jeu-card">
+        <div class="jeu-icon">🚀</div>
+        <h3>Among Us</h3>
+        <p>Tips imposteur, stratégies crewmate et guide des rôles.</p>
+        <div class="card-tags">
+          <span class="tag tips">Tips</span>
+          <span class="tag guide">Guide</span>
+        </div>
+        <div class="card-progression">
+          <span>Contenu</span>
+          <div class="barre-prog"><div class="barre-fill" style="--largeur:70%"></div></div>
+          <span>70%</span>
+        </div>
+        <button class="btn-card" onclick="ouvrirGuide('among-us')">VOIR LE GUIDE →</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- GUIDES -->
+  <section class="section guides-section" id="guides">
+    <div class="section-header">
+      <span class="section-tag">// GUIDES PAR NIVEAU</span>
+      <h2>📖 Nos <span>Guides</span></h2>
+      <p>Des guides adaptés à tous les niveaux, du débutant à l'expert.</p>
+    </div>
+    <div class="filtres">
+      <button class="filtre actif" onclick="filtrerGuides('tous',this)">Tous</button>
+      <button class="filtre" onclick="filtrerGuides('debutant',this)">🟢 Débutant</button>
+      <button class="filtre" onclick="filtrerGuides('avance',this)">🔴 Avancé</button>
+      <button class="filtre" onclick="filtrerGuides('roblox',this)">🟥 Roblox</button>
+      <button class="filtre" onclick="filtrerGuides('fps',this)">🔫 FPS</button>
+      <button class="filtre" onclick="filtrerGuides('rpg',this)">🌸 RPG</button>
+    </div>
+    <div class="guides-grid" id="guides-grid">
+
+      <div class="guide-card" data-cat="roblox avance">
+        <div class="guide-niveau avance">AVANCÉ</div>
+        <h4>⛵ Guide Ascension 4 — Sailor Piece</h4>
+        <p>Drops requis, boss à farmer dans l'ordre et stratégie optimale.</p>
+        <div class="guide-meta">
+          <span>⏱ 15 min</span><span>👁 2.4k vues</span><span>🟥 Roblox</span>
+        </div>
+        <button class="btn-guide" onclick="ouvrirGuide('sailor-piece')">LIRE →</button>
+      </div>
+
+      <div class="guide-card" data-cat="roblox debutant">
+        <div class="guide-niveau debutant">DÉBUTANT</div>
+        <h4>🍎 Débuter sur Blox Fruits</h4>
+        <p>Quel fruit choisir, où farmer et comment progresser rapidement.</p>
+        <div class="guide-meta">
+          <span>⏱ 10 min</span><span>👁 5.1k vues</span><span>🟥 Roblox</span>
+        </div>
+        <button class="btn-guide" onclick="ouvrirGuide('blox-fruits')">LIRE →</button>
+      </div>
+
+      <div class="guide-card" data-cat="fps avance">
+        <div class="guide-niveau avance">AVANCÉ</div>
+        <h4>🔫 Loadout Parfait — Call of Duty</h4>
+        <p>Les meilleures configurations d'armes pour le ranked.</p>
+        <div class="guide-meta">
+          <span>⏱ 8 min</span><span>👁 3.2k vues</span><span>🔫 FPS</span>
+        </div>
+        <button class="btn-guide" onclick="ouvrirGuide('cod')">LIRE →</button>
+      </div>
+
+      <div class="guide-card" data-cat="debutant">
+        <div class="guide-niveau debutant">DÉBUTANT</div>
+        <h4>⛏ Débuter sur Minecraft</h4>
+        <p>Les 10 premières choses à faire pour survivre ta première nuit.</p>
+        <div class="guide-meta">
+          <span>⏱ 12 min</span><span>👁 7.8k vues</span><span>⛏ Sandbox</span>
+        </div>
+        <button class="btn-guide" onclick="ouvrirGuide('minecraft')">LIRE →</button>
+      </div>
+
+      <div class="guide-card" data-cat="fps avance">
+        <div class="guide-niveau avance">AVANCÉ</div>
+        <h4>🎯 Build Compétitif — Fortnite</h4>
+        <p>Techniques de build avancées et rotations pour le ranked.</p>
+        <div class="guide-meta">
+          <span>⏱ 20 min</span><span>👁 4.5k vues</span><span>🎯 Battle Royale</span>
+        </div>
+        <button class="btn-guide" onclick="ouvrirGuide('fortnite')">LIRE →</button>
+      </div>
+
+      <div class="guide-card" data-cat="rpg avance">
+        <div class="guide-niveau avance">AVANCÉ</div>
+        <h4>🌸 Build Hu Tao — Genshin Impact</h4>
+        <p>Artefacts optimaux, armes et composition d'équipe.</p>
+        <div class="guide-meta">
+          <span>⏱ 18 min</span><span>👁 3.7k vues</span><span>🌸 RPG</span>
+        </div>
+        <button class="btn-guide" onclick="ouvrirGuide('genshin')">LIRE →</button>
+      </div>
+
+      <div class="guide-card" data-cat="roblox debutant">
+        <div class="guide-niveau debutant">DÉBUTANT</div>
+        <h4>🐾 Débuter sur Pet Simulator X</h4>
+        <p>Quels pets garder et comment bien utiliser ses codes.</p>
+        <div class="guide-meta">
+          <span>⏱ 8 min</span><span>👁 2.1k vues</span><span>🟥 Roblox</span>
+        </div>
+        <button class="btn-guide" onclick="ouvrirGuide('pet-sim')">LIRE →</button>
+      </div>
+
+      <div class="guide-card" data-cat="avance">
+        <div class="guide-niveau avance">AVANCÉ</div>
+        <h4>⚔ Attaque TH16 — Clash of Clans</h4>
+        <p>Composition optimale et stratégie pour 3 étoiles garanti.</p>
+        <div class="guide-meta">
+          <span>⏱ 14 min</span><span>👁 1.8k vues</span><span>⚔ Stratégie</span>
+        </div>
+        <button class="btn-guide" onclick="ouvrirGuide('coc')">LIRE →</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TIER LIST -->
+  <section class="section tierlist-section" id="tierlist">
+    <div class="section-header">
+      <span class="section-tag">// CLASSEMENTS OFFICIELS</span>
+      <h2>🏆 Tier <span>Lists</span></h2>
+      <p>Classements officiels BMF_GAMING mis à jour après chaque patch.</p>
+    </div>
+    <div class="tierlist-grid">
+
+      <div class="tierlist-card">
+        <h4>🍎 Blox Fruits — Fruits</h4>
+        <div class="tier tier-s"><span class="tier-label">S</span>
+          <div class="tier-items">
+            <span class="tier-item">Dragon</span>
+            <span class="tier-item">Leopard</span>
+            <span class="tier-item">Kitsune</span>
+          </div>
+        </div>
+        <div class="tier tier-a"><span class="tier-label">A</span>
+          <div class="tier-items">
+            <span class="tier-item">Dough</span>
+            <span class="tier-item">Spirit</span>
+            <span class="tier-item">Venom</span>
+          </div>
+        </div>
+        <div class="tier tier-b"><span class="tier-label">B</span>
+          <div class="tier-items">
+            <span class="tier-item">Shadow</span>
+            <span class="tier-item">Rumble</span>
+          </div>
+        </div>
+        <div class="tier tier-c"><span class="tier-label">C</span>
+          <div class="tier-items">
+            <span class="tier-item">Smoke</span>
+            <span class="tier-item">Spike</span>
+          </div>
+        </div>
+        <button class="btn-card" onclick="ouvrirGuide('blox-fruits')">TIER LIST COMPLÈTE →</button>
+      </div>
+
+      <div class="tierlist-card">
+        <h4>🌸 Genshin — Personnages</h4>
+        <div class="tier tier-s"><span class="tier-label">S</span>
+          <div class="tier-items">
+            <span class="tier-item">Furina</span>
+            <span class="tier-item">Neuvillette</span>
+            <span class="tier-item">Raiden</span>
+          </div>
+        </div>
+        <div class="tier tier-a"><span class="tier-label">A</span>
+          <div class="tier-items">
+            <span class="tier-item">Hu Tao</span>
+            <span class="tier-item">Yelan</span>
+            <span class="tier-item">Kazuha</span>
+          </div>
+        </div>
+        <div class="tier tier-b"><span class="tier-label">B</span>
+          <div class="tier-items">
+            <span class="tier-item">Xiangling</span>
+            <span class="tier-item">Bennett</span>
+          </div>
+        </div>
+        <div class="tier tier-c"><span class="tier-label">C</span>
+          <div class="tier-items">
+            <span class="tier-item">Amber</span>
+            <span class="tier-item">Lisa</span>
+          </div>
+        </div>
+        <button class="btn-card" onclick="ouvrirGuide('genshin')">TIER LIST COMPLÈTE →</button>
+      </div>
+
+      <div class="tierlist-card">
+        <h4>🎯 Fortnite — Armes</h4>
+        <div class="tier tier-s"><span class="tier-label">S</span>
+          <div class="tier-items">
+            <span class="tier-item">Sniper Bolt</span>
+            <span class="tier-item">AR Exo</span>
+          </div>
+        </div>
+        <div class="tier tier-a"><span class="tier-label">A</span>
+          <div class="tier-items">
+            <span class="tier-item">Shotgun Pompe</span>
+            <span class="tier-item">SMG Rapide</span>
+          </div>
+        </div>
+        <div class="tier tier-b"><span class="tier-label">B</span>
+          <div class="tier-items">
+            <span class="tier-item">Pistolet Pro</span>
+            <span class="tier-item">LMG</span>
+          </div>
+        </div>
+        <div class="tier tier-c"><span class="tier-label">C</span>
+          <div class="tier-items">
+            <span class="tier-item">Revolver</span>
+            <span class="tier-item">Minigun</span>
+          </div>
+        </div>
+        <button class="btn-card" onclick="ouvrirGuide('fortnite')">TIER LIST COMPLÈTE →</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CODES -->
+  <section class="section codes-section" id="codes">
+    <div class="section-header">
+      <span class="section-tag">// CODES ACTIFS DU MOMENT</span>
+      <h2>🎁 Codes <span>Gratuits</span></h2>
+      <p>Codes actifs mis à jour régulièrement. Utilise-les avant expiration !</p>
+    </div>
+    <div class="codes-grid" id="codes-container"></div>
+  </section>
+
+  <!-- NEWS -->
+  <section class="section news-section" id="news">
+    <div class="section-header">
+      <span class="section-tag">// ACTUALITÉS</span>
+      <h2>🔥 Dernières <span>News</span></h2>
+      <p>Patch notes, mises à jour et nouveautés sur tous les jeux couverts.</p>
+    </div>
+    <div class="news-grid" id="news-container"></div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="section contact-section" id="contact">
+    <div class="contact-inner">
+      <h2>Rejoins la <span>Communauté</span></h2>
+      <p>Rejoins BMF_GAMING pour accéder aux guides exclusifs et updates.</p>
+      <div class="contact-form">
+        <!-- Honeypot anti-bot caché -->
+        <input type="text" id="honeypot" name="website"
+          style="display:none;position:absolute;left:-9999px"
+          tabindex="-1" autocomplete="off"/>
+        <input type="text" id="pseudo-input" placeholder="Ton pseudo gamer..." maxlength="20"/>
+        <input type="email" id="email-input" placeholder="Ton email (optionnel)..."/>
+        <button class="btn-primary" onclick="rejoindre()">REJOINDRE BMF_GAMING →</button>
+      </div>
+      <div class="confirmation" id="confirmation" style="display:none"></div>
+      <div class="socials">
+        <a href="#" class="social-btn discord">💬 Discord</a>
+        <a href="#" class="social-btn youtube">▶ YouTube</a>
+        <a href="#" class="social-btn twitter">🐦 Twitter</a>
+        <a href="#" class="social-btn tiktok">🎵 TikTok</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <span class="logo">BMF<span>_GAMING</span></span>
+        <p>Le guide ultime pour tous les gamers. Roblox, Fortnite, COD, Minecraft et bien plus.</p>
+      </div>
+      <div class="footer-liens">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="#roblox">🟥 Roblox</a></li>
+          <li><a href="#jeux">🎮 Autres Jeux</a></li>
+          <li><a href="#guides">📖 Guides</a></li>
+          <li><a href="#tierlist">🏆 Tier Lists</a></li>
+          <li><a href="#codes">🎁 Codes</a></li>
+          <li><a href="#news">🔥 News</a></li>
+        </ul>
+      </div>
+      <div class="footer-jeux">
+        <h4>Jeux couverts</h4>
+        <ul>
+          <li>⛵ Sailor Piece</li>
+          <li>🍎 Blox Fruits</li>
+          <li>🌟 Anime Adventures</li>
+          <li>🎯 Fortnite</li>
+          <li>🔫 Call of Duty</li>
+          <li>⛏ Minecraft</li>
+          <li>⚔ Clash of Clans</li>
+          <li>🌸 Genshin Impact</li>
+          <li>🚀 Among Us</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 <strong>BMF_GAMING</strong> — Créé par BMF Davoxx — Tous droits réservés</p>
+      <p>Site mis à jour régulièrement 🔄</p>
+    </div>
+  </footer>
+
+  <!-- BOUTON TOP -->
+  <button class="btn-top" id="btn-top" onclick="scrollTop()" title="Retour en haut">▲</button>
+
+  <!-- MODAL GUIDE -->
+  <div id="modal-overlay" onclick="fermerModal()" style="display:none"></div>
+  <div id="modal-guide" style="display:none"></div>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
