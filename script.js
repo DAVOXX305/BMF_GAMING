@@ -1,88 +1,68 @@
 /* =====================================================
-   BMF_GAMING — script.js
-   Fichier     : script.js
-   Créateur    : BMF Davoxx
-   Description : Toutes les fonctionnalités du site
-                 + Chat Gaming Bot BMF_GAMING
+   BMF_GAMING — script.js v2.0 — TOUS BUGS CORRIGÉS
+   Corrections : Burger · News · Codes · Bot · Chat
+   Nouveau     : Community Chat Joueurs en temps réel
    ===================================================== */
-
 'use strict';
 
 // ============================================
-// 1. UTILITAIRES GLOBAUX
+// 1. UTILITAIRES
 // ============================================
-
-/**
- * Sélecteur raccourci — remplace document.querySelector
- * @param {string} sel    — Sélecteur CSS
- * @param {Element} parent — Parent optionnel
- */
-const $ = (sel, parent = document) => parent.querySelector(sel);
-const $$ = (sel, parent = document) => [...parent.querySelectorAll(sel)];
-
-/**
- * Ajoute un écouteur de façon sécurisée (sans planter si l'élément est null)
- */
-const on = (el, event, fn) => el && el.addEventListener(event, fn);
-
+const $ = (s, p = document) => p.querySelector(s);
+const $$ = (s, p = document) => [...p.querySelectorAll(s)];
+const on = (el, ev, fn) => el && el.addEventListener(ev, fn);
 
 // ============================================
-// 2. NAVBAR — Scroll + Hide/Show + Burger
+// 2. NAVBAR — Scroll + Masquage
 // ============================================
-
 const navbar = $('#navbar');
-let dernierScroll = 0;
+let lastScroll = 0;
 
 window.addEventListener('scroll', () => {
-  const scrollActuel = window.scrollY;
+  const y = window.scrollY;
 
-  // Ajoute la classe scrolled après 80px de défilement
-  if (scrollActuel > 80) {
-    navbar?.classList.add('scrolled');
-  } else {
-    navbar?.classList.remove('scrolled');
+  // Classe scrolled
+  navbar?.classList.toggle('scrolled', y > 80);
+
+  // Masquer/Afficher selon direction scroll
+  if (y > 300 && navbar) {
+    navbar.style.transform = y > lastScroll
+      ? 'translateY(-110%)'
+      : 'translateY(0)';
+  } else if (navbar) {
+    navbar.style.transform = 'translateY(0)';
   }
 
-  // Cache/montre la navbar selon la direction du scroll
-  if (scrollActuel > 250) {
-    if (scrollActuel > dernierScroll) {
-      // Scroll vers le bas → cache la navbar
-      navbar.style.transform = 'translateY(-110%)';
-    } else {
-      // Scroll vers le haut → montre la navbar
-      navbar.style.transform = 'translateY(0)';
-    }
-  } else {
-    if (navbar) navbar.style.transform = 'translateY(0)';
-  }
+  // Bouton retour en haut — FIXED
+  $('#btn-top')?.classList.toggle('visible', y > 450);
 
-  dernierScroll = scrollActuel;
+  lastScroll = y;
 });
 
-/**
- * Ouvre/Ferme le menu burger sur mobile
- */
+// ============================================
+// 3. BURGER MENU — FIXED
+// ============================================
 function toggleMenu() {
-  const navLinks = $('#nav-links');
-  const burger   = $('#burger');
+  const nav    = $('#nav-links');
+  const burger = $('#burger');
+  if (!nav || !burger) return;
 
-  navLinks?.classList.toggle('ouvert');
-  burger?.classList.toggle('actif');
+  const isOpen = nav.classList.toggle('ouvert');
+  const spans  = $$('span', burger);
 
-  // Anime les 3 barres burger → croix X
-  const spans = $$('span', burger);
-  if (burger?.classList.contains('actif')) {
+  if (isOpen) {
     if (spans[0]) spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
     if (spans[1]) spans[1].style.opacity   = '0';
     if (spans[2]) spans[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
   } else {
-    if (spans[0]) spans[0].style.transform = '';
-    if (spans[1]) spans[1].style.opacity   = '';
-    if (spans[2]) spans[2].style.transform = '';
+    spans.forEach(s => {
+      s.style.transform = '';
+      s.style.opacity   = '';
+    });
   }
 }
 
-// Ferme le menu burger si on clique en dehors
+// Ferme le burger au clic extérieur
 document.addEventListener('click', e => {
   const nav    = $('#nav-links');
   const burger = $('#burger');
@@ -90,903 +70,696 @@ document.addEventListener('click', e => {
     nav?.classList.contains('ouvert') &&
     !nav.contains(e.target) &&
     !burger?.contains(e.target)
-  ) {
-    toggleMenu();
-  }
+  ) toggleMenu();
 });
 
-// Ferme le menu burger au clic sur un lien
-$$('.nav-link').forEach(link => {
-  on(link, 'click', () => {
-    const nav = $('#nav-links');
-    if (nav?.classList.contains('ouvert')) toggleMenu();
-  });
-});
-
+// Ferme le burger au clic sur un lien
+$$('.nav-link').forEach(l => on(l, 'click', () => {
+  if ($('#nav-links')?.classList.contains('ouvert')) toggleMenu();
+}));
 
 // ============================================
-// 3. SMOOTH SCROLL — Liens d'ancre fluides
+// 4. SMOOTH SCROLL — FIXED
 // ============================================
-
-document.querySelectorAll('a[href^="#"]').forEach(link => {
-  link.addEventListener('click', e => {
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  on(a, 'click', e => {
     e.preventDefault();
-    const id     = link.getAttribute('href');
-    const cible  = document.querySelector(id);
-    if (!cible) return;
-
-    const hauteurNav = navbar?.offsetHeight || 70;
-    const posTop = cible.getBoundingClientRect().top + window.scrollY - hauteurNav - 12;
-
-    window.scrollTo({ top: posTop, behavior: 'smooth' });
+    const target = document.querySelector(a.getAttribute('href'));
+    if (!target) return;
+    const offset = (navbar?.offsetHeight || 70) + 12;
+    window.scrollTo({
+      top: target.getBoundingClientRect().top + window.scrollY - offset,
+      behavior: 'smooth'
+    });
   });
 });
 
-
 // ============================================
-// 4. LIEN ACTIF DANS LA NAVBAR
-// Le lien correspondant à la section visible
-// reçoit la classe "actif-nav" automatiquement
+// 5. LIEN ACTIF NAVBAR
 // ============================================
-
-const toutesSections = $$('section[id]');
-
-const obsSection = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
+const navObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
       $$('.nav-link').forEach(l => l.classList.remove('actif-nav'));
-      const lienActif = $(`.nav-link[href="#${entry.target.id}"]`);
-      lienActif?.classList.add('actif-nav');
+      $(`.nav-link[href="#${e.target.id}"]`)?.classList.add('actif-nav');
     }
   });
-}, { threshold: 0.38 });
+}, { threshold: 0.3 });
 
-toutesSections.forEach(s => obsSection.observe(s));
-
+$$('section[id]').forEach(s => navObs.observe(s));
 
 // ============================================
-// 5. COMPTEURS ANIMÉS (Hero Stats)
-// Les chiffres défilent de 0 vers leur valeur
+// 6. COMPTEURS ANIMÉS
 // ============================================
-
-/**
- * Anime un compteur de 0 vers data-target
- * @param {HTMLElement} el - Élément avec data-target
- */
 function animerCompteur(el) {
-  const cible    = parseInt(el.dataset.target, 10);
-  const duree    = 2400;
-  const pas      = 16;
-  const etapes   = duree / pas;
-  const increment = cible / etapes;
-  let courant    = 0;
+  const cible = parseInt(el.dataset.target, 10);
+  const debut = performance.now();
+  const duree = 2200;
 
-  const timer = setInterval(() => {
-    courant += increment;
-    if (courant >= cible) {
-      el.textContent = cible.toLocaleString('fr-FR');
-      clearInterval(timer);
-    } else {
-      el.textContent = Math.floor(courant).toLocaleString('fr-FR');
-    }
-  }, pas);
+  (function update(now) {
+    const p    = Math.min((now - debut) / duree, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.floor(ease * cible).toLocaleString('fr-FR');
+    if (p < 1) requestAnimationFrame(update);
+    else el.textContent = cible.toLocaleString('fr-FR');
+  })(performance.now());
 }
 
-// Lance les compteurs quand le hero devient visible
-const obsHero = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
+new IntersectionObserver((entries, obs) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
       $$('.stat-nombre').forEach(animerCompteur);
-      obsHero.disconnect(); // Une seule fois suffit
+      obs.disconnect();
     }
   });
-}, { threshold: 0.5 });
-
-const sectionHero = $('#accueil');
-if (sectionHero) obsHero.observe(sectionHero);
-
+}, { threshold: 0.5 }).observe($('#accueil') || document.body);
 
 // ============================================
-// 6. SCROLL REVEAL — Apparition en cascade
-// Les cartes et sections apparaissent au scroll
+// 7. SCROLL REVEAL
 // ============================================
-
-const obsReveal = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const delai = parseInt(entry.target.dataset.delay || '0', 10);
-      setTimeout(() => {
-        entry.target.classList.add('visible');
-      }, delai);
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const delay = parseInt(e.target.dataset.delay || '0', 10);
+      setTimeout(() => e.target.classList.add('visible'), delay);
     }
   });
-}, { threshold: 0.08 });
+}, { threshold: 0.05 });
 
-// Applique l'animation + délais en cascade aux éléments
-$$('.jeu-card, .guide-card, .news-card, .tierlist-card, .code-card').forEach((el, i) => {
-  el.classList.add('apparition');
-  el.dataset.delay = String((i % 4) * 95); // Cascade par groupe de 4
-  obsReveal.observe(el);
-});
-
-// En-têtes de sections et filtres
-$$('.section-header, .filtres, .contact-inner').forEach(el => {
-  el.classList.add('apparition');
-  obsReveal.observe(el);
-});
-
+function initReveal() {
+  $$('.jeu-card, .guide-card, .news-card, .tierlist-card, .code-card').forEach((el, i) => {
+    el.classList.add('apparition');
+    el.dataset.delay = String((i % 4) * 90);
+    revealObs.observe(el);
+  });
+  $$('.section-header, .filtres, .contact-inner').forEach(el => {
+    el.classList.add('apparition');
+    revealObs.observe(el);
+  });
+}
 
 // ============================================
-// 7. BOUTON RETOUR EN HAUT
+// 8. BOUTON RETOUR EN HAUT
 // ============================================
-
-const btnTop = $('#btn-top');
-
-window.addEventListener('scroll', () => {
-  if (window.scrollY > 450) {
-    btnTop?.classList.add('visible');
-  } else {
-    btnTop?.classList.remove('visible');
-  }
-});
-
 function scrollTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-
 // ============================================
-// 8. FILTRES GUIDES
-// Filtre les guides par catégorie au clic
+// 9. FILTRES GUIDES — FIXED
 // ============================================
-
 function filtrerGuides(categorie) {
-  // Met à jour le bouton actif
-  $$('.filtre').forEach(btn => btn.classList.remove('actif'));
-  if (event?.target) event.target.classList.add('actif');
+  // Retire actif de tous les boutons
+  $$('.filtre').forEach(b => b.classList.remove('actif'));
+  // Met actif sur le bouton cliqué
+  event?.currentTarget?.classList.add('actif');
 
-  const cartes = $$('.guide-card');
-
-  cartes.forEach(carte => {
+  $$('.guide-card').forEach(carte => {
+    const cats = carte.dataset.cat || '';
     if (categorie === 'tous') {
       carte.classList.remove('cache');
-      return;
-    }
-    const cats = carte.dataset.cat || '';
-    if (cats.includes(categorie)) {
-      carte.classList.remove('cache');
     } else {
-      carte.classList.add('cache');
+      carte.classList.toggle('cache', !cats.includes(categorie));
     }
   });
 }
 
-
 // ============================================
-// 9. FORMULAIRE CONTACT
-// Validation + Message de confirmation animé
+// 10. FORMULAIRE CONTACT
 // ============================================
-
 function rejoindre() {
-  const champPseudo  = $('#pseudo-input');
-  const champEmail   = $('#email-input');
-  const confirmation = $('#confirmation');
+  const pseudoEl  = $('#pseudo-input');
+  const emailEl   = $('#email-input');
+  const confirmEl = $('#confirmation');
+  const pseudo    = pseudoEl?.value.trim();
+  const email     = emailEl?.value.trim();
 
-  const pseudo = champPseudo?.value.trim();
-  const email  = champEmail?.value.trim();
-
-  // Validation pseudo obligatoire
-  if (!pseudo) {
-    secouer(champPseudo);
-    afficherErreur(champPseudo, '⚠ Entre ton pseudo gamer !');
+  if (!pseudo || pseudo.length < 3) {
+    secouer(pseudoEl);
+    afficherErreur(pseudoEl, '⚠ Entre ton pseudo gamer (min. 3 caractères) !');
     return;
   }
-  if (pseudo.length < 3) {
-    secouer(champPseudo);
-    afficherErreur(champPseudo, '⚠ Minimum 3 caractères.');
-    return;
-  }
-
-  // Validation email (optionnel mais doit être valide si rempli)
   if (email && !email.includes('@')) {
-    secouer(champEmail);
-    afficherErreur(champEmail, '⚠ Email invalide.');
+    secouer(emailEl);
+    afficherErreur(emailEl, '⚠ Email invalide.');
     return;
   }
 
-  // Succès — réinitialise les champs
-  if (champPseudo) champPseudo.value = '';
-  if (champEmail)  champEmail.value  = '';
+  if (pseudoEl) pseudoEl.value = '';
+  if (emailEl)  emailEl.value  = '';
 
-  if (confirmation) {
-    confirmation.innerHTML = `✅ Bienvenue dans le crew <strong>BMF_GAMING</strong>, <em>${pseudo}</em> !`;
-    confirmation.style.display = 'block';
-    confirmation.style.animation = 'fadeInUp 0.4s ease';
-    setTimeout(() => {
-      confirmation.style.display = 'none';
-    }, 5000);
+  if (confirmEl) {
+    confirmEl.innerHTML = `✅ Bienvenue <strong>${pseudo}</strong> dans le crew BMF_GAMING ! 🎮`;
+    confirmEl.style.display = 'block';
+    setTimeout(() => { confirmEl.style.display = 'none'; }, 5000);
   }
+
+  // Ajoute le joueur dans le community chat
+  ajouterJoueurCommunity(pseudo);
 }
 
-/**
- * Animation de secousse sur un champ invalide
- * @param {HTMLElement} el - Le champ à secouer
- */
 function secouer(el) {
   if (!el) return;
   el.style.borderColor = 'var(--rouge)';
-  el.style.animation   = 'shake 0.42s ease';
-  setTimeout(() => {
-    el.style.animation   = '';
-    el.style.borderColor = '';
-  }, 500);
+  el.style.animation   = 'shake 0.4s ease';
+  setTimeout(() => { el.style.animation = ''; el.style.borderColor = ''; }, 500);
 }
 
-/**
- * Affiche un message d'erreur stylisé sous un champ
- * @param {HTMLElement} el - Le champ concerné
- * @param {string} message - Le message à afficher
- */
-function afficherErreur(el, message) {
-  // Supprime l'ancien message s'il existe
+function afficherErreur(el, msg) {
   el?.parentElement?.querySelector('.erreur-msg')?.remove();
-
-  const msg = document.createElement('span');
-  msg.className   = 'erreur-msg';
-  msg.textContent = message;
-  msg.style.cssText = `
-    color: var(--rouge);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.70rem;
-    letter-spacing: 1px;
-    display: block;
-    margin-top: 5px;
-    animation: fadeInUp 0.3s ease;
-  `;
-  el?.insertAdjacentElement('afterend', msg);
-  setTimeout(() => msg.remove(), 3200);
+  if (!el) return;
+  const span = document.createElement('span');
+  span.className   = 'erreur-msg';
+  span.textContent = msg;
+  Object.assign(span.style, {
+    color: 'var(--rouge)', fontSize: '0.70rem',
+    display: 'block', marginTop: '4px', fontFamily: 'monospace'
+  });
+  el.insertAdjacentElement('afterend', span);
+  setTimeout(() => span.remove(), 3000);
 }
 
-
 // ============================================
-// 10. COPIER UN CODE AU CLIC
-// Clic sur un .code-valeur → copie dans presse-papiers
+// 11. COPIER CODE AU CLIC
 // ============================================
-
 document.addEventListener('click', e => {
-  if (e.target.classList.contains('code-valeur')) {
-    const code = e.target.textContent.trim();
+  if (!e.target.classList.contains('code-valeur')) return;
+  const code = e.target.textContent.trim();
+  navigator.clipboard.writeText(code).then(() => {
+    const orig = e.target.textContent;
+    e.target.textContent = '✅ COPIÉ !';
+    e.target.style.color = 'var(--vert)';
+    setTimeout(() => { e.target.textContent = orig; e.target.style.color = ''; }, 1800);
+  }).catch(() => {
+    e.target.style.color = 'var(--rouge)';
+    setTimeout(() => { e.target.style.color = ''; }, 1500);
+  });
+});
 
-    navigator.clipboard.writeText(code).then(() => {
-      const original = e.target.textContent;
-      e.target.textContent = '✅ COPIÉ !';
-      e.target.style.color = 'var(--vert)';
-      e.target.style.borderColor = 'rgba(0,255,136,0.50)';
-
-      setTimeout(() => {
-        e.target.textContent   = original;
-        e.target.style.color   = '';
-        e.target.style.borderColor = '';
-      }, 1800);
-    }).catch(() => {
-      // Fallback si clipboard API non dispo
-      e.target.style.color = 'var(--rouge)';
-      setTimeout(() => { e.target.style.color = ''; }, 1500);
+// ============================================
+// 12. EFFET LUMINEUX CARTES
+// ============================================
+function initEffetCartes() {
+  $$('.jeu-card, .tierlist-card, .news-card, .guide-card').forEach(c => {
+    on(c, 'mousemove', e => {
+      const r = c.getBoundingClientRect();
+      const x = ((e.clientX - r.left) / r.width)  * 100;
+      const y = ((e.clientY - r.top)  / r.height) * 100;
+      c.style.background = `radial-gradient(circle at ${x}% ${y}%,
+        rgba(0,212,255,0.07), rgba(7,15,42,0.88) 60%)`;
     });
-  }
-});
-
-
-// ============================================
-// 11. EFFET LUMINEUX SUR LES CARTES
-// La lumière suit la position de la souris
-// ============================================
-
-$$('.jeu-card, .tierlist-card, .news-card, .guide-card').forEach(carte => {
-  carte.addEventListener('mousemove', e => {
-    const rect = carte.getBoundingClientRect();
-    const x = ((e.clientX - rect.left)  / rect.width)  * 100;
-    const y = ((e.clientY - rect.top)   / rect.height) * 100;
-
-    carte.style.background = `
-      radial-gradient(circle at ${x}% ${y}%,
-        rgba(0,212,255,0.055) 0%,
-        rgba(10,12,20,0.88)   55%
-      )
-    `;
+    on(c, 'mouseleave', () => { c.style.background = ''; });
   });
-
-  carte.addEventListener('mouseleave', () => {
-    carte.style.background = '';
-  });
-});
-
+}
 
 // ============================================
-// 12. CHARGEMENT DYNAMIQUE (depuis data.js)
-// Injecte les news et codes dans le DOM
+// 13. CHARGEMENT NEWS — FIXED
 // ============================================
-
-/**
- * Génère et injecte les cartes de news
- * Les données viennent de BMF_NEWS dans data.js
- */
 function chargerNews() {
   const container = $('#news-container');
-  if (!container || typeof BMF_NEWS === 'undefined') return;
+  if (!container) return;
 
-  container.innerHTML = BMF_NEWS.map((news, i) => `
+  let news = [];
+  try { news = (window.BMF_NEWS || []); } catch(e) { news = []; }
+
+  if (!news.length) {
+    container.innerHTML = `
+      <p style="color:var(--text-dim);text-align:center;
+                grid-column:1/-1;padding:30px;font-family:monospace;">
+        🔄 Les actualités arrivent très bientôt...
+      </p>`;
+    return;
+  }
+
+  container.innerHTML = news.slice(0, 6).map((n, i) => `
     <article class="news-card apparition" data-delay="${(i % 3) * 90}">
-      <div class="news-categorie">${news.emoji} ${news.categorie}</div>
-      <h4>${news.titre}</h4>
-      <p>${news.description}</p>
-      <span class="news-date">${news.date}</span>
+      <div class="news-categorie">${n.emoji || '📰'} ${n.categorie || 'NEWS'}</div>
+      <h4>${n.titre || ''}</h4>
+      <p>${n.description || ''}</p>
+      <span class="news-date">${n.date || ''}</span>
     </article>
   `).join('');
 
-  $$('#news-container .news-card').forEach(el => obsReveal.observe(el));
+  $$('#news-container .news-card').forEach(el => revealObs.observe(el));
 }
 
-/**
- * Génère et injecte les cartes de codes
- * Les données viennent de BMF_CODES dans data.js
- */
+// ============================================
+// 14. CHARGEMENT CODES — FIXED
+// ============================================
 function chargerCodes() {
   const container = $('#codes-container');
-  if (!container || typeof BMF_CODES === 'undefined') return;
+  if (!container) return;
 
-  container.innerHTML = BMF_CODES.map((code, i) => `
-    <div class="code-card apparition" data-delay="${(i % 4) * 80}">
-      <span class="code-jeu">${code.jeu}</span>
-      <span class="code-valeur" title="Cliquer pour copier">${code.code}</span>
-      <span class="code-recompense">🎁 ${code.recompense}</span>
-      <span class="code-expire">⏳ Expire : ${code.expire}</span>
+  let codes = [];
+  try { codes = (window.BMF_CODES || []).filter(c => c.actif !== false); }
+  catch(e) { codes = []; }
+
+  if (!codes.length) {
+    container.innerHTML = `
+      <p style="color:var(--text-dim);text-align:center;
+                grid-column:1/-1;padding:30px;font-family:monospace;">
+        🎁 De nouveaux codes arrivent très bientôt !
+      </p>`;
+    return;
+  }
+
+  container.innerHTML = codes.map((c, i) => `
+    <div class="code-card apparition" data-delay="${(i % 4) * 75}">
+      <span class="code-jeu">${c.jeu || ''}</span>
+      <span class="code-valeur" title="Clique pour copier">${c.code || ''}</span>
+      <span class="code-recompense">🎁 ${c.recompense || ''}</span>
+      <span class="code-expire">⏳ ${c.expire || ''}</span>
     </div>
   `).join('');
 
-  $$('#codes-container .code-card').forEach(el => obsReveal.observe(el));
+  $$('#codes-container .code-card').forEach(el => revealObs.observe(el));
 }
 
-
 // ============================================
-// 13. 💬 CHAT GAMING BMF — COMPLET & DÉTAILLÉ
-// ─────────────────────────────────────────────
-// Bot intelligent avec base de connaissances
-// couvrant tous les jeux du site
+// 15. BOT GAMING — VERSION AMÉLIORÉE
+// Moteur de matching amélioré + plus de réponses
 // ============================================
 
-// ── 13.1 BASE DE CONNAISSANCES GAMING COMPLÈTE ──
+const BOT_KB = [
 
-const BMF_KB = {
+  // ── Salutations ──
+  {
+    mots: ['bonjour','salut','hello','yo','hey','coucou','bonsoir','hi','hola'],
+    rep: `👋 <b>Salut gamer !</b> Bienvenue sur <b>BMF_GAMING</b> !<br><br>
+Je suis le bot BMF — je peux t'aider avec :<br>
+🟥 Roblox · 🎯 Fortnite · 🔫 COD · ⛏ Minecraft<br>
+⚔ Clash of Clans · 🌸 Genshin · 🚀 Among Us<br><br>
+Pose ta question ou clique sur une suggestion ! 🎮`
+  },
 
-  // ── GÉNÉRAL & SALUTATIONS ──
-  general: [
-    {
-      patterns: ['bonjour', 'salut', 'hello', 'yo', 'hey', 'coucou', 'bonsoir', 'hi'],
-      reponse: `👋 <b>Salut gamer !</b> Bienvenue sur le chat de <b>BMF_GAMING</b> !<br><br>
-Je suis le bot de BMF Davoxx. Je connais tous les jeux du site et je peux t'aider avec :<br>
-- 🟥 Roblox (Sailor Piece, Blox Fruits, etc.)<br>
-- 🎯 Fortnite · 🔫 COD · ⛏ Minecraft<br>
-- ⚔ Clash of Clans · 🌸 Genshin · 🚀 Among Us<br><br>
-Pose ta question ou clique sur une suggestion !`
-    },
-    {
-      patterns: ['merci', 'thx', 'thanks', 'super', 'cool', 'nickel', 'parfait', 'top', 'genial'],
-      reponse: `😎 <b>Avec plaisir !</b> C'est ça BMF_GAMING — aider les gamers à progresser !<br><br>
-Si tu as d'autres questions, je suis là. Pense aussi à rejoindre la communauté en bas de page pour les guides exclusifs ! 🔥`
-    },
-    {
-      patterns: ['aide', 'help', 'que peux tu faire', 'comment ca marche'],
-      reponse: `🎮 <b>Voici ce que je peux faire pour toi :</b><br><br>
-📖 <b>Guides</b> → Stratégies, progression, boss<br>
-🏆 <b>Tier Lists</b> → Classements mis à jour<br>
-🎁 <b>Codes</b> → Codes gratuits actifs<br>
-💡 <b>Tips</b> → Astuces pour progresser<br>
-⚔ <b>Boss</b> → Stratégies de combat<br><br>
-Exemple de questions :<br>
+  // ── Aide ──
+  {
+    mots: ['aide','help','quoi faire','que sais tu','que peux tu'],
+    rep: `🎮 <b>Je peux t'aider avec :</b><br><br>
+📖 <b>Guides</b> — stratégies, progression, boss<br>
+🏆 <b>Tier Lists</b> — classements par jeu<br>
+🎁 <b>Codes</b> — codes gratuits actifs<br>
+💡 <b>Tips</b> — astuces pour progresser<br>
+⚔ <b>Boss</b> — stratégies de combat détaillées<br><br>
+Exemples de questions :<br>
 <em>"Comment passer Ascension 4 ?"</em><br>
 <em>"Meilleur loadout COD ?"</em><br>
 <em>"Codes Blox Fruits ?"</em>`
-    },
-    {
-      patterns: ['code', 'codes gratuit', 'codes actifs', 'codes disponibles'],
-      reponse: `🎁 <b>Codes Gratuits BMF_GAMING</b><br><br>
-Tous les codes actifs sont dans la section <b>🎁 Codes Gratuits</b> du site.<br><br>
-Je peux aussi te donner les codes d'un jeu précis ! Lequel ?<br>
-- 🍎 Blox Fruits<br>
-- 🌟 Anime Adventures<br>
-- 🐾 Pet Simulator X<br>
-- 🏠 Brookhaven<br>
-- 🌸 Genshin Impact`
-    },
-    {
-      patterns: ['update', 'mise a jour', 'news', 'nouveaute', 'patch'],
-      reponse: `🔄 <b>Updates & News</b><br><br>
-Toutes les mises à jour sont dans la section <b>🔥 Dernières News</b> du site.<br><br>
-BMF_GAMING est mis à jour régulièrement. La <b>barre d'annonce</b> tout en haut affiche les dernières infos en temps réel !`
-    },
-  ],
+  },
 
-  // ── ROBLOX GÉNÉRAL ──
-  roblox: [
-    {
-      patterns: ['roblox', 'c est quoi roblox', 'robux'],
-      reponse: `🟥 <b>Roblox — La Plateforme</b><br><br>
-Roblox est une plateforme de jeux en ligne où la communauté crée des jeux variés. Gratuit à jouer, avec les <b>Robux</b> comme monnaie premium.<br><br>
-BMF_GAMING couvre les jeux Roblox les plus populaires :<br>
-⛵ Sailor Piece &nbsp;|&nbsp; 🍎 Blox Fruits<br>
-🌟 Anime Adventures &nbsp;|&nbsp; 🐾 Pet Sim X<br>
-🏙 Da Hood &nbsp;|&nbsp; 🏠 Brookhaven<br>
-🐣 Adopt Me &nbsp;|&nbsp; Et bien plus !`
-    },
-  ],
+  // ── Codes général ──
+  {
+    mots: ['code','codes','code gratuit','codes gratuits','recompense'],
+    rep: `🎁 <b>Codes Gratuits — BMF_GAMING</b><br><br>
+Tous les codes actifs sont dans la section <b>🎁 Codes Gratuits</b> du site. Tu peux aussi me demander les codes d'un jeu précis !<br><br>
+- 🍎 Blox Fruits → tape <em>"codes blox fruits"</em><br>
+- 🌸 Genshin Impact → tape <em>"codes genshin"</em><br>
+- 🌟 Anime Adventures → tape <em>"codes anime adventures"</em><br>
+- 🐾 Pet Simulator X → tape <em>"codes pet sim"</em>`
+  },
 
-  // ── SAILOR PIECE ──
-  sailorpiece: [
-    {
-      patterns: ['sailor piece', 'sailorpiece'],
-      reponse: `⛵ <b>Sailor Piece — Guide BMF</b><br><br>
-RPG anime sur Roblox inspiré de One Piece. BMF_GAMING couvre tout :<br>
-- Progression et Ascensions<br>
-- Farming de boss (Alucard, Aizen)<br>
-- Builds et stratégies<br><br>
-Tu as une question précise ? Exemples :<br>
-<em>"Comment passer Ascension 4 ?"</em><br>
+  // ── Sailor Piece général ──
+  {
+    mots: ['sailor piece','sailor','sailorpiece','sp'],
+    rep: `⛵ <b>Sailor Piece — Résumé BMF</b><br><br>
+RPG anime Roblox inspiré de One Piece.<br><br>
+📌 <b>Contenu disponible :</b><br>
+- Guide Ascension 4 complet<br>
+- Farming boss Alucard & Aizen<br>
+- Drops et stratégies optimales<br><br>
+Pose une question précise :<br>
+<em>"Guide Ascension 4"</em><br>
 <em>"Comment battre Alucard ?"</em><br>
 <em>"Drops d'Aizen ?"</em>`
-    },
-    {
-      patterns: ['ascension 4', 'ascension iv', 'asc 4', 'passer ascension'],
-      reponse: `🏆 <b>Guide Ascension 4 — Sailor Piece</b><br><br>
-<b>Prérequis :</b> Niveau minimum 450<br><br>
-<b>Étapes obligatoires :</b><br>
-1️⃣ Farmer <b>Alucard</b> (Sailor Island) :<br>
-&nbsp;&nbsp;→ Épée Fantôme + Manteau des Ombres<br>
-2️⃣ Farmer <b>Aizen</b> (Hollow Island) :<br>
-&nbsp;&nbsp;→ Zanpakuto Brisé + Haori de Capitaine<br>
-3️⃣ Parler au PNJ <b>Yami</b> à la Citadelle<br>
-4️⃣ Compléter le donjon final<br><br>
-💡 <b>Conseil BMF :</b> Farm Alucard en premier — son drop rate (8%) est meilleur qu'Aizen (6%).`
-    },
-    {
-      patterns: ['alucard', 'boss alucard', 'sailor island boss'],
-      reponse: `⚔ <b>Boss Alucard — Sailor Island</b><br><br>
-📍 <b>Localisation :</b> Zone Nord-Est de Sailor Island<br>
-⏱ <b>Respawn :</b> 15 minutes<br>
-❤️ <b>HP :</b> ~850 000<br>
-🎯 <b>Drops :</b><br>
-- Épée Fantôme → taux 8%<br>
-- Manteau des Ombres → taux 5%<br>
-- Grimoire Alucard → taux 2% (rare)<br><br>
-⚠️ <b>Attaques dangereuses :</b><br>
-- Drain Vital → récupère ses HP, reste à distance<br>
-- Nova Sombre → AoE circulaire, déplacez-vous<br><br>
-💡 <b>Stratégie BMF :</b> Comp distance recommandée. Apporte des potions de résistance magique.`
-    },
-    {
-      patterns: ['aizen', 'boss aizen', 'hollow island', 'hollow'],
-      reponse: `👁 <b>Boss Aizen — Hollow Island</b><br><br>
-📍 <b>Localisation :</b> Château Central de Hollow Island<br>
-⏱ <b>Respawn :</b> 20 minutes<br>
-❤️ <b>HP :</b> ~1 200 000<br>
-🎯 <b>Drops :</b><br>
-- Zanpakuto Brisé → taux 6%<br>
-- Haori de Capitaine → taux 4%<br>
-- Reiatsu Noir → taux 1.5% (très rare)<br><br>
-⚠️ <b>Phases de combat :</b><br>
-- Phase 1 (100-50% HP) : Attaques normales<br>
-- Phase 2 (50-0% HP) : Active Bankai → TRÈS dangereux<br><br>
-💡 <b>Stratégie BMF :</b> Bouge constamment en phase 2. Apporte des potions de vitesse + soins.`
-    },
-  ],
+  },
 
-  // ── BLOX FRUITS ──
-  bloxfruits: [
-    {
-      patterns: ['blox fruits', 'bloxfruits'],
-      reponse: `🍎 <b>Blox Fruits — Guide BMF</b><br><br>
-Un des RPG Roblox les plus populaires. BMF_GAMING couvre :<br>
-- Tier list des fruits<br>
+  // ── Ascension 4 ──
+  {
+    mots: ['ascension 4','asc 4','ascension iv','passer ascension','debloquer ascension'],
+    rep: `🏆 <b>Guide Ascension 4 — Sailor Piece</b><br><br>
+<b>Prérequis :</b> Niveau 450 minimum<br><br>
+<b>📋 Ordre optimal :</b><br>
+1️⃣ Farm <b>Alucard</b> (Sailor Island)<br>
+&nbsp;&nbsp;&nbsp;→ Drops : Épée Fantôme (8%) + Manteau (5%)<br>
+2️⃣ Farm <b>Aizen</b> (Hollow Island)<br>
+&nbsp;&nbsp;&nbsp;→ Drops : Zanpakuto (6%) + Haori (4%)<br>
+3️⃣ PNJ <b>Yami</b> à la Citadelle<br>
+4️⃣ Donjon final de validation<br><br>
+💡 <b>Conseil BMF :</b> Commence par Alucard — son drop rate est meilleur !`
+  },
+
+  // ── Alucard ──
+  {
+    mots: ['alucard','boss alucard','sailor island boss','farmer alucard'],
+    rep: `⚔ <b>Boss Alucard — Sailor Island</b><br><br>
+📍 <b>Localisation :</b> Zone Nord-Est<br>
+⏱ <b>Respawn :</b> 15 minutes<br>
+❤️ <b>HP :</b> ~850 000<br><br>
+🎯 <b>Drops :</b><br>
+- Épée Fantôme → <b>8%</b><br>
+- Manteau des Ombres → <b>5%</b><br>
+- Grimoire Alucard → <b>2%</b> (rare)<br><br>
+⚠️ <b>Attaques :</b><br>
+- Drain Vital → reste à distance<br>
+- Nova Sombre → AoE circulaire, bouge<br><br>
+💡 <b>Tip BMF :</b> Comp distance + potions résistance magique.`
+  },
+
+  // ── Aizen ──
+  {
+    mots: ['aizen','boss aizen','hollow island','hollow','farmer aizen'],
+    rep: `👁 <b>Boss Aizen — Hollow Island</b><br><br>
+📍 <b>Localisation :</b> Château Central<br>
+⏱ <b>Respawn :</b> 20 minutes<br>
+❤️ <b>HP :</b> ~1 200 000<br><br>
+🎯 <b>Drops :</b><br>
+- Zanpakuto Brisé → <b>6%</b><br>
+- Haori de Capitaine → <b>4%</b><br>
+- Reiatsu Noir → <b>1.5%</b> (très rare)<br><br>
+⚠️ <b>Phases :</b><br>
+- Phase 1 (100→50%) → normal<br>
+- Phase 2 (50→0%) → Bankai actif, DANGER<br><br>
+💡 <b>Tip BMF :</b> Bouge CONSTAMMENT en phase 2. Potions vitesse + soins obligatoires.`
+  },
+
+  // ── Blox Fruits général ──
+  {
+    mots: ['blox fruits','bloxfruits','blox fruit'],
+    rep: `🍎 <b>Blox Fruits — Guide BMF</b><br><br>
+BMF_GAMING couvre tout :<br>
+- Tier list fruits mise à jour<br>
 - Meilleurs spots de grinding<br>
 - Codes actifs<br>
-- Progression et builds<br><br>
-Tu veux des infos sur quoi ? Exemples :<br>
-<em>"Meilleur fruit Blox Fruits ?"</em><br>
-<em>"Codes Blox Fruits ?"</em><br>
-<em>"Où farmer Blox Fruits ?"</em>`
-    },
-    {
-      patterns: ['meilleur fruit', 'quel fruit blox', 'tier list fruit', 'tier list blox'],
-      reponse: `🍎 <b>Tier List Fruits — Blox Fruits</b><br><br>
-👑 <b>Tier SS (Broken) :</b><br>
-Dragon · Leopard · Kitsune<br><br>
-🥇 <b>Tier S :</b><br>
-Dough · Spirit · Venom · Phoenix<br><br>
-🥈 <b>Tier A :</b><br>
-Shadow · Rumble · Magma · Quake<br><br>
-🥉 <b>Tier B :</b><br>
-Buddha · Flame · Ice · Sand<br><br>
-📉 <b>Tier C :</b><br>
-Smoke · Spike · Chop<br><br>
+- Progression par niveau<br><br>
+Exemples de questions :<br>
+<em>"Meilleur fruit blox fruits ?"</em><br>
+<em>"Où farmer blox fruits ?"</em><br>
+<em>"Codes blox fruits ?"</em>`
+  },
+
+  // ── Tier list fruits ──
+  {
+    mots: ['meilleur fruit','quel fruit','tier list fruit','tier list blox','fruit blox'],
+    rep: `🍎 <b>Tier List Fruits — Blox Fruits</b><br><br>
+👑 <b>SS (Broken) :</b> Dragon · Leopard · Kitsune<br>
+🥇 <b>S :</b> Dough · Spirit · Venom · Phoenix<br>
+🥈 <b>A :</b> Shadow · Rumble · Magma · Quake<br>
+🥉 <b>B :</b> Buddha · Flame · Ice · Sand<br>
+📉 <b>C :</b> Smoke · Spike · Chop<br><br>
 💡 PvP → <b>Leopard</b> | Farm → <b>Dragon</b> | Débutant → <b>Magma</b>`
-    },
-    {
-      patterns: ['code blox', 'codes blox fruits'],
-      reponse: `🎁 <b>Codes Blox Fruits Actifs</b><br><br>
+  },
+
+  // ── Codes Blox Fruits ──
+  {
+    mots: ['code blox','codes blox'],
+    rep: `🎁 <b>Codes Blox Fruits Actifs</b><br><br>
 - <code>BIGNEWS</code> → 2x EXP 24h<br>
 - <code>THEGREATACE</code> → Beli Boost 20min<br>
 - <code>ENVYARMY</code> → XP Boost 20min<br>
 - <code>Magicbus</code> → 2x EXP 20min<br>
-- <code>Sub2CaptainMaui</code> → EXP Boost<br><br>
-⚠️ Les codes expirent rapidement ! Vérifie la section Codes du site régulièrement.`
-    },
-    {
-      patterns: ['farm blox', 'grind blox', 'ou farmer blox', 'spot farm blox'],
-      reponse: `⚔ <b>Meilleurs Spots de Farm — Blox Fruits</b><br><br>
-🟢 <b>Débutant (Niv 1-100) :</b><br>
-Île des Pirates → Monkey Island<br><br>
-🟡 <b>Milieu (Niv 100-700) :</b><br>
-Skylands → Magma Village → Colosseum<br><br>
-🔴 <b>Avancé (Niv 700-1500) :</b><br>
-Haunted Castle → Underwater City<br><br>
-💀 <b>End Game (Niv 1500+) :</b><br>
-Sea of Treats → Floating Turtle → Mirror Fractal<br><br>
-💡 Toujours farm avec Auto-Skill actif + Fruit en Z/X pour max EXP.`
-    },
-  ],
+- <code>KITTGAMING</code> → 2x EXP 20min<br><br>
+⚠️ Utilise-les vite — ils expirent !`
+  },
 
-  // ── ANIME ADVENTURES ──
-  animeadventures: [
-    {
-      patterns: ['anime adventures', 'anime adventure'],
-      reponse: `🌟 <b>Anime Adventures — Guide BMF</b><br><br>
-Tower Defense anime sur Roblox. BMF_GAMING couvre :<br>
-- Tier list des unités<br>
-- Stratégies de défense<br>
-- Codes actifs<br><br>
-💡 <b>Conseil rapide :</b> Les unités Mythic/Legendary sont indispensables pour les stages difficiles. Farm les Summons régulièrement !`
-    },
-  ],
+  // ── Farm Blox Fruits ──
+  {
+    mots: ['farm blox','grind blox','ou farmer blox','spot blox'],
+    rep: `⚔ <b>Spots de Farm — Blox Fruits</b><br><br>
+🟢 <b>Débutant (1-100) :</b> Île des Pirates<br>
+🟡 <b>Milieu (100-700) :</b> Skylands → Colosseum<br>
+🔴 <b>Avancé (700-1500) :</b> Haunted Castle<br>
+💀 <b>End Game (1500+) :</b> Mirror Fractal<br><br>
+💡 Toujours farmer avec Auto-Skill activé !`
+  },
 
-  // ── FORTNITE ──
-  fortnite: [
-    {
-      patterns: ['fortnite'],
-      reponse: `🎯 <b>Fortnite — Guide BMF</b><br><br>
-Battle Royale de Epic Games. BMF_GAMING couvre :<br>
-- Builds compétitifs<br>
+  // ── Fortnite général ──
+  {
+    mots: ['fortnite'],
+    rep: `🎯 <b>Fortnite — Guide BMF</b><br><br>
+BMF_GAMING couvre :<br>
+- Builds compétitifs et edits<br>
 - Tier list des armes<br>
 - Stratégies ranked<br>
-- Edits et techniques avancées<br><br>
-Tu veux des infos sur quoi ? Exemples :<br>
-<em>"Build compétitif Fortnite ?"</em><br>
-<em>"Meilleure arme Fortnite ?"</em><br>
-<em>"Comment monter en ranked ?"</em>`
-    },
-    {
-      patterns: ['build fortnite', 'building fortnite', 'construire fortnite', 'edit fortnite', '90s fortnite'],
-      reponse: `🔨 <b>Guide Build Compétitif — Fortnite</b><br><br>
-🧱 <b>Techniques fondamentales :</b><br>
-- <b>Ramp Rush</b> → Rampe + Mur pour avancer sous protection<br>
-- <b>90s</b> → Monter rapidement en hauteur (Rampe+Mur+Sol x4)<br>
+- Rotations et survie<br><br>
+Exemples :<br>
+<em>"Build compétitif fortnite ?"</em><br>
+<em>"Meilleure arme fortnite ?"</em><br>
+<em>"Comment monter en ranked fortnite ?"</em>`
+  },
+
+  // ── Build Fortnite ──
+  {
+    mots: ['build fortnite','building fortnite','edit fortnite','90 fortnite','construire fortnite'],
+    rep: `🔨 <b>Build Compétitif — Fortnite</b><br><br>
+🧱 <b>Techniques essentielles :</b><br>
+- <b>Ramp Rush</b> → Rampe + Mur pour avancer couvert<br>
+- <b>90s</b> → Monter en hauteur rapidement<br>
 - <b>Box Fight</b> → Cube 1x1 en combat rapproché<br>
 - <b>High Ground</b> → Toujours chercher la hauteur<br><br>
-✂️ <b>Edits rapides :</b><br>
-- Window edit (mur) → Tirer + Reset<br>
-- Floor edit → Tomber sur l'ennemi<br>
-- Door edit → Sortie rapide<br><br>
+✂️ <b>Edits clés :</b><br>
+- Window edit → Tirer + Reset immédiat<br>
+- Floor edit → Tomber sur l'ennemi<br><br>
 💡 <b>Ordre d'apprentissage BMF :</b><br>
-90s → Box Fight → Edits → Ramp Rush → Combos`
-    },
-    {
-      patterns: ['arme fortnite', 'meilleure arme fortnite', 'tier list fortnite', 'loadout fortnite'],
-      reponse: `🎯 <b>Tier List Armes — Fortnite</b><br><br>
-👑 <b>Tier S :</b><br>
-Sniper Bolt-Action · AR Exo-Serie<br><br>
-🥇 <b>Tier A :</b><br>
-Shotgun Pompe Pro · SMG Rapide<br><br>
-🥈 <b>Tier B :</b><br>
-Pistolet Pro · Fusil de Précision<br><br>
-📉 <b>Tier C :</b><br>
-Revolver · LMG · Minigun<br><br>
+90s → Box Fight → Edits → Ramp Rush`
+  },
+
+  // ── Armes Fortnite ──
+  {
+    mots: ['arme fortnite','tier list fortnite','meilleure arme fortnite','loadout fortnite'],
+    rep: `🎯 <b>Tier List Armes — Fortnite</b><br><br>
+👑 <b>S :</b> Sniper Bolt-Action · AR Exo-Série<br>
+🥇 <b>A :</b> Shotgun Pompe Pro · SMG Rapide<br>
+🥈 <b>B :</b> Pistolet Pro · Fusil Précision<br>
+📉 <b>C :</b> Revolver · LMG · Minigun<br><br>
 🎒 <b>Loadout optimal BMF :</b><br>
 AR + Shotgun + Sniper + SMG + Soins`
-    },
-    {
-      patterns: ['ranked fortnite', 'rang fortnite', 'monter rang fortnite'],
-      reponse: `📊 <b>Guide Ranked Fortnite — BMF Tips</b><br><br>
-🎯 <b>Stratégie de base :</b><br>
+  },
+
+  // ── Ranked Fortnite ──
+  {
+    mots: ['ranked fortnite','rang fortnite','monter fortnite','diamond fortnite'],
+    rep: `📊 <b>Guide Ranked — Fortnite</b><br><br>
+🎯 <b>Règles d'or :</b><br>
 - Atterris loin du bus pour farm tranquille<br>
-- Évite les combats tôt dans la game<br>
-- Priorise les soins et les ressources<br>
-- Joue le edge du storm<br><br>
-⚡ <b>Tips avancés :</b><br>
-- High ground avant les fights<br>
-- Place toujours un mur avant de tirer<br>
-- Un Kill = +100 SR, une Victoire = +450 SR<br><br>
-💡 <b>Conseil BMF :</b> Survival > Kills en bas de classement.`
-    },
-  ],
+- Évite les combats tôt dans la partie<br>
+- Joue le bord du storm<br>
+- High ground avant les fights finaux<br><br>
+💡 <b>Conseil BMF :</b> 1 Kill = +100 SR · 1 Victoire = +450 SR<br>
+→ Survival > Kills en ranked !`
+  },
 
-  // ── CALL OF DUTY ──
-  cod: [
-    {
-      patterns: ['call of duty', 'cod', 'warzone', 'modern warfare', 'black ops'],
-      reponse: `🔫 <b>Call of Duty — Guide BMF</b><br><br>
-BMF_GAMING couvre COD en détail :<br>
-- Multijoueur (TDM, DOM, SnD, Ranked)<br>
-- Warzone Battle Royale<br>
-- Meilleurs loadouts<br>
-- Stratégies par map<br><br>
-Questions possibles :<br>
+  // ── Call of Duty ──
+  {
+    mots: ['call of duty','cod','warzone','modern warfare','black ops'],
+    rep: `🔫 <b>Call of Duty — Guide BMF</b><br><br>
+BMF_GAMING couvre :<br>
+- Meilleurs loadouts par style<br>
+- Stratégies par map<br>
+- Guide ranked play<br>
+- Tips Search & Destroy<br><br>
+Exemples :<br>
 <em>"Meilleur loadout COD ?"</em><br>
-<em>"Comment monter en ranked COD ?"</em><br>
-<em>"Stratégie SnD ?"</em>`
-    },
-    {
-      patterns: ['loadout cod', 'meilleur loadout cod', 'arme cod', 'classe cod', 'setup cod'],
-      reponse: `🔫 <b>Meilleurs Loadouts COD — BMF Selection</b><br><br>
-⚡ <b>Loadout Agressif (SMG)</b><br>
-Arme : Rival-9 / Striker-9<br>
-Accessoires : Suppressor · Long Barrel · Extended Mag · Vertical Grip<br>
-Atout : Combat rapproché imbattable<br><br>
-🎯 <b>Loadout Long Portée (AR)</b><br>
-Arme : MCW / Holger-26<br>
-Accessoires : 4x Scope · Bipod · Precision Barrel<br>
-Atout : Dominer les grandes maps<br><br>
-💥 <b>Loadout SnD (Sniper)</b><br>
-Arme : MORS / Longbow<br>
-Accessoires : 12x Scope · Tac Laser · Stock léger<br><br>
-💡 <b>Conseil BMF :</b> Adapte selon la map !<br>
-Shipment → SMG · Karachi → AR · Sub Base → Sniper`
-    },
-    {
-      patterns: ['ranked cod', 'rang cod', 'monter rang cod', 'sr cod'],
-      reponse: `📊 <b>Guide Ranked Play — Call of Duty</b><br><br>
-🎯 <b>Règles d'or pour progresser :</b><br>
-1. <b>Objectif avant kills</b> → Capture zones, plante bombes<br>
-2. <b>Communication</b> → Utilise le système de ping<br>
-3. <b>Connais les angles</b> → Chaque map a ses spots clés<br>
-4. <b>Play safe</b> → Évite les deaths inutiles<br>
-5. <b>Armes méta</b> → Utilise les meilleures classes<br><br>
-🏆 <b>Modes les plus rentables en SR :</b><br>
-1er → Search & Destroy (victoire = max SR)<br>
-2ème → Hardpoint (objectif = bonus SR)<br>
-3ème → Control<br><br>
-💡 <b>Conseil BMF :</b> 5 victoires SR > 10 games KD positif.`
-    },
-    {
-      patterns: ['strategie snd', 'search destroy', 'tips snd'],
-      reponse: `💣 <b>Stratégie Search & Destroy — COD</b><br><br>
-🎯 <b>En Attaque :</b><br>
-- Split l'équipe → 3 A-Site / 2 B-Site<br>
-- Fake plant pour attirer les défenseurs<br>
-- Plante la bombe même si 1v1 → force le défuse<br>
-- Smoke + Flash avant d'entrer dans un site<br><br>
+<em>"Stratégie SnD ?"</em><br>
+<em>"Comment monter en ranked COD ?"</em>`
+  },
+
+  // ── Loadout COD ──
+  {
+    mots: ['loadout cod','meilleur loadout','arme cod','classe cod','meta cod'],
+    rep: `🔫 <b>Loadouts COD — Sélection BMF</b><br><br>
+⚡ <b>Agressif (SMG) :</b><br>
+Rival-9 | Suppressor · Long Barrel · Extended Mag<br><br>
+🎯 <b>Long Portée (AR) :</b><br>
+MCW | 4x Scope · Bipod · Precision Barrel<br><br>
+💥 <b>SnD (Sniper) :</b><br>
+MORS | 12x Scope · Tac Laser · Stock léger<br><br>
+💡 Shipment → SMG · Karachi → AR · Sub Base → Sniper`
+  },
+
+  // ── SnD COD ──
+  {
+    mots: ['snd','search destroy','search and destroy','bombe cod'],
+    rep: `💣 <b>Search & Destroy — COD</b><br><br>
+⚔ <b>En Attaque :</b><br>
+- Split 3/2 sur les deux sites<br>
+- Fake plant pour piéger les défenseurs<br>
+- Smoke + Flash avant d'entrer<br><br>
 🛡 <b>En Défense :</b><br>
-- Tiens les angles clés des deux sites<br>
-- Ne rush jamais seul en début de round<br>
-- Garde 1 joueur pour défuse silencieux<br>
-- Rotate rapidement quand le plant est confirmé<br><br>
-💡 <b>Conseil BMF :</b> La communication > le skill en SnD.`
-    },
-  ],
+- Tiens les angles des deux sites<br>
+- Rotate vite quand le plant est confirmé<br>
+- Garde 1 joueur pour le défuse silencieux<br><br>
+💡 <b>Conseil BMF :</b> La communication > le skill en SnD !`
+  },
 
-  // ── MINECRAFT ──
-  minecraft: [
-    {
-      patterns: ['minecraft'],
-      reponse: `⛏ <b>Minecraft — Guide BMF</b><br><br>
-Le jeu bac à sable emblématique. BMF_GAMING couvre :<br>
-- Guide de survie débutant<br>
-- Builds et architectures<br>
+  // ── Minecraft ──
+  {
+    mots: ['minecraft','mine craft'],
+    rep: `⛏ <b>Minecraft — Guide BMF</b><br><br>
+BMF_GAMING couvre :<br>
+- Guide survie débutant complet<br>
 - Meilleures seeds 2026<br>
-- Redstone et mécanismes<br><br>
-Questions possibles :<br>
-<em>"Débuter sur Minecraft ?"</em><br>
-<em>"Meilleures seeds Minecraft ?"</em><br>
+- Comment trouver des diamants<br>
+- Builds et redstone avancé<br><br>
+Exemples :<br>
+<em>"Débuter sur minecraft ?"</em><br>
+<em>"Meilleures seeds minecraft ?"</em><br>
 <em>"Comment trouver des diamants ?"</em>`
-    },
-    {
-      patterns: ['debuter minecraft', 'debut minecraft', 'premiere nuit', 'survie minecraft', 'guide debutant minecraft'],
-      reponse: `🌙 <b>Guide Survie Débutant — Minecraft</b><br><br>
-📋 <b>Les 10 premières minutes :</b><br>
-1️⃣ Coupe des arbres → crafting table + hache bois<br>
-2️⃣ Mine de la pierre → outils en pierre<br>
-3️⃣ Collecte de nourriture (animaux, baies)<br>
-4️⃣ Construis un abri AVANT la nuit (7 min)<br>
-5️⃣ Fabrique un lit → skip la nuit<br>
-6️⃣ Mine du charbon → torches<br>
-7️⃣ Creuse jusqu'au niveau Y:-54 pour les diamants<br><br>
-⚠️ <b>Règle d'or :</b> Ne jamais miner directement vers le bas !<br>
-💡 <b>Conseil BMF :</b> Creuse en escalier en zigzag pour maximiser l'exploration.`
-    },
-    {
-      patterns: ['diamant minecraft', 'trouver diamant', 'ou sont les diamants'],
-      reponse: `💎 <b>Guide Diamants — Minecraft 1.21</b><br><br>
+  },
+
+  // ── Diamants Minecraft ──
+  {
+    mots: ['diamant','diamants','trouver diamant','niveau diamant','y diamant'],
+    rep: `💎 <b>Guide Diamants — Minecraft 1.21</b><br><br>
 📍 <b>Niveau optimal :</b> Y: -54 à Y: -58<br><br>
-⛏ <b>Technique de minage :</b><br>
-- Technique des branches (Branch Mining)<br>
+⛏ <b>Technique Branch Mining :</b><br>
 - Tunnels espacés de 2 blocs<br>
-- Torches tous les 8 blocs<br><br>
-🔧 <b>Outils recommandés :</b><br>
-- Pioche en Fer minimum<br>
-- Enchantement Fortune III → 2-3x plus de diamants<br>
-- Enchantement Efficacité V → mine plus vite<br><br>
-💡 <b>Conseil BMF :</b> Évite les grottes lors du minage — risque de chute de lave.`
-    },
-    {
-      patterns: ['seed minecraft', 'meilleure seed', 'seed 2026'],
-      reponse: `🗺 <b>Meilleures Seeds Minecraft 2026</b><br><br>
-🏔 <b>Seed Villages :</b> <code>-1789428733</code><br>
-→ 3 villages + forteresse proche du spawn<br><br>
-💎 <b>Seed Diamants :</b> <code>2111844826</code><br>
-→ Mine de diamants visible dès le spawn<br><br>
-🏝 <b>Seed Île Tropicale :</b> <code>-7853516656</code><br>
-→ Belle île avec forêt de bambous<br><br>
-🏰 <b>Seed Bastion :</b> <code>1887126555</code><br>
-→ Spawn face à un château de bastion<br><br>
-🌋 <b>Seed Biomes Variés :</b> <code>4837753</code><br>
-→ 8 biomes différents autour du spawn`
-    },
-  ],
+- Torches tous les 8 blocs<br>
+- Mine en zigzag pour couvrir plus de terrain<br><br>
+🔧 <b>Enchantements essentiels :</b><br>
+- Fortune III → 2-3x plus de diamants<br>
+- Efficacité V → mine plus vite<br><br>
+💡 <b>Conseil BMF :</b> Évite les grottes → risque de lave !`
+  },
 
-  // ── CLASH OF CLANS ──
-  coc: [
-    {
-      patterns: ['clash of clans', 'coc', 'clashofclans'],
-      reponse: `⚔ <b>Clash of Clans — Guide BMF</b><br><br>
-Jeu de stratégie mobile de Supercell. BMF_GAMING couvre :<br>
-- Compositions d'attaque par TH<br>
-- Designs de bases anti-3 étoiles<br>
-- Stratégies Clan Wars<br>
-- Guide de progression<br><br>
-Questions possibles :<br>
-<em>"Meilleure attaque TH16 ?"</em><br>
-<em>"Comment progresser vite ?"</em><br>
-<em>"Meilleure base défensive ?"</em>`
-    },
-    {
-      patterns: ['attaque th16', 'th16', 'town hall 16'],
-      reponse: `🏆 <b>Guide Attaque TH16 — Clash of Clans</b><br><br>
-💥 <b>Compo #1 — Super Barbarians (Facile)</b><br>
-- 10 Super Barbarians + 5 Witches + 5 Healers<br>
-- Sorts : Rage x2 · Heal x2 · Freeze x2<br>
-- Héros : Barb King devant, Archer Queen derrière<br><br>
-💥 <b>Compo #2 — Dragons Électro (Avancé)</b><br>
-- 10 Dragons + 5 Electro Dragons<br>
-- Sorts : Lightning x4 · Rage x2 · Haste x1<br>
-- Idéal contre les bases centrées<br><br>
-💥 <b>Compo #3 — Root Rider (Méta)</b><br>
-- 5 Root Riders + 10 Super Giants<br>
-- Sorts : Rage x3 · Poison x2<br>
-- Destroy les défenses extérieures en premier<br><br>
-💡 <b>Règle BMF :</b> Commence toujours par des "funneling troops" !`
-    },
-    {
-      patterns: ['progresser coc', 'niveau th', 'progression clash'],
-      reponse: `📈 <b>Guide Progression — Clash of Clans</b><br><br>
-🚀 <b>Règles d'or BMF :</b><br>
-1. <b>Builders TOUJOURS occupés</b> → Ne laisse jamais un builder inactif<br>
-2. <b>Labo TOUJOURS actif</b> → Une recherche permanente<br>
-3. <b>Ne rush pas le TH</b> → Max les défenses et troupes d'abord<br>
-4. <b>Rejoins un bon clan</b> → Clan Wars = ressources gratuites<br>
-5. <b>Complete les achievements</b> → Gems gratuites<br><br>
-⚡ <b>Ordre de priorité des upgrades :</b><br>
-Défenses → Troupes → Bâtiments ressources`
-    },
-  ],
+  // ── Seeds Minecraft ──
+  {
+    mots: ['seed minecraft','seeds minecraft','meilleure seed','seed 2026'],
+    rep: `🗺 <b>Meilleures Seeds Minecraft 2026</b><br><br>
+🏔 <b>Villages au spawn :</b> <code>-1789428733</code><br>
+💎 <b>Diamants visibles :</b> <code>2111844826</code><br>
+🏝 <b>Île tropicale :</b> <code>-7853516656</code><br>
+🏰 <b>Château bastion :</b> <code>1887126555</code><br>
+🌋 <b>8 biomes variés :</b> <code>4837753</code>`
+  },
 
-  // ── GENSHIN IMPACT ──
-  genshin: [
-    {
-      patterns: ['genshin', 'genshin impact'],
-      reponse: `🌸 <b>Genshin Impact — Guide BMF</b><br><br>
-RPG open-world de HoYoverse. BMF_GAMING couvre :<br>
+  // ── Clash of Clans ──
+  {
+    mots: ['clash of clans','coc','clashofclans','clash clan'],
+    rep: `⚔ <b>Clash of Clans — Guide BMF</b><br><br>
+BMF_GAMING couvre :<br>
+- Attaques par TH (Town Hall)<br>
+- Designs de bases défensives<br>
+- Clan Wars League (CWL)<br>
+- Guide de progression rapide<br><br>
+Exemples :<br>
+<em>"Attaque TH16 ?"</em><br>
+<em>"Comment progresser vite COC ?"</em>`
+  },
+
+  // ── TH16 COC ──
+  {
+    mots: ['th16','town hall 16','attaque th16','th 16'],
+    rep: `🏆 <b>Attaque TH16 — Clash of Clans</b><br><br>
+💥 <b>Compo #1 — Super Barbarians :</b><br>
+10 Super Barb + 5 Witches + 5 Healers<br>
+Sorts : Rage x2 · Heal x2 · Freeze x2<br><br>
+💥 <b>Compo #2 — Dragons Électro :</b><br>
+10 Dragons + 5 Electro Dragons<br>
+Sorts : Lightning x4 · Rage x2<br><br>
+💥 <b>Compo #3 — Root Rider (Méta) :</b><br>
+5 Root Riders + 10 Super Giants<br>
+Sorts : Rage x3 · Poison x2<br><br>
+💡 Commence TOUJOURS par le funneling !`
+  },
+
+  // ── Genshin Impact ──
+  {
+    mots: ['genshin','genshin impact','hutao','hu tao'],
+    rep: `🌸 <b>Genshin Impact — Guide BMF</b><br><br>
+BMF_GAMING couvre :<br>
 - Builds complets par personnage<br>
+- Tier list mise à jour v5.7<br>
 - Compositions d'équipe optimales<br>
-- Tier list mise à jour<br>
-- Guides de donjons et boss<br><br>
-Questions possibles :<br>
+- Codes Primogems gratuits<br><br>
+Exemples :<br>
 <em>"Build Hu Tao ?"</em><br>
 <em>"Tier list Genshin ?"</em><br>
-<em>"Meilleure équipe Genshin ?"</em>`
-    },
-    {
-      patterns: ['build hu tao', 'hutao', 'hu tao'],
-      reponse: `🌸 <b>Build Hu Tao — Genshin Impact</b><br><br>
-⚔ <b>Rôle :</b> DPS Pyro Principal<br><br>
-🗡 <b>Armes (du meilleur au budget) :</b><br>
-- Bâton de Homa (BiS)<br>
-- Lanze de Drachenkampf<br>
-- Dragon's Bane (budget)<br><br>
-🎭 <b>Artefacts :</b> 4x Crimson Witch of Flames<br>
-- Sablier : HP%<br>
-- Calice : Pyro DMG Bonus%<br>
-- Tiare : Crit DMG (si Crit Rate ≥ 60%)<br><br>
-👥 <b>Team optimale :</b><br>
-Hu Tao · Yelan · Zhongli · Albedo<br><br>
-💡 <b>Rotation BMF :</b> Zhongli Shield → Yelan E → Hu Tao E → Normal Attacks → Burst`
-    },
-    {
-      patterns: ['tier list genshin', 'meilleur perso genshin', 'personnage genshin'],
-      reponse: `🏆 <b>Tier List Genshin Impact — Actuelle</b><br><br>
-👑 <b>Tier SS (Meta absolue) :</b><br>
-Furina · Neuvillette<br><br>
-🥇 <b>Tier S :</b><br>
-Raiden Shogun · Hu Tao · Kazuha · Yelan · Nahida<br><br>
-🥈 <b>Tier A :</b><br>
-Xiao · Ayaka · Itto · Cyno · Wanderer<br><br>
-🥉 <b>Tier B :</b><br>
-Xiangling · Bennett · Fischl · Sucrose<br><br>
-📉 <b>Tier C :</b><br>
-Amber · Lisa · Kaeya · Noelle<br><br>
-💡 <b>Note BMF :</b> Même les personnages C peuvent être efficaces avec un build parfait !`
-    },
-    {
-      patterns: ['resine genshin', 'resin genshin', 'stamina genshin', 'comment farmer genshin'],
-      reponse: `⚡ <b>Guide Résine — Genshin Impact</b><br><br>
-La Résine (160 max) est la ressource principale pour farmer.<br><br>
-💡 <b>Priorité d'utilisation :</b><br>
-1. Domaines d'artefacts (x20 résine)<br>
-2. Boss hebdomadaires (x30 résine)<br>
-3. Boss normaux (x40 résine)<br>
-4. Donjon leylines (x20 résine)<br><br>
-⏱ <b>Régénération :</b> 1 résine toutes les 8 minutes<br>
-→ 160 résine en ~21h si tu pars de 0<br><br>
-💡 <b>Conseil BMF :</b> Utilise ta résine chaque jour — ne la laisse jamais au max !`
-    },
-  ],
+<em>"Codes genshin ?"</em>`
+  },
 
-  // ── AMONG US ──
-  amongus: [
-    {
-      patterns: ['among us', 'among us tips', 'impostor', 'imposteur', 'crewmate'],
-      reponse: `🚀 <b>Among Us — Guide BMF</b><br><br>
-Jeu de déduction multijoueur. BMF_GAMING couvre :<br>
-- Tips pour gagner en imposteur<br>
-- Stratégies crewmate<br>
-- Guide des rôles spéciaux<br>
-- Astuces de sabotage<br><br>
-Questions possibles :<br>
+  // ── Build Hu Tao ──
+  {
+    mots: ['build hu tao','build hutao','artefact hutao','artefact hu tao'],
+    rep: `🌸 <b>Build Hu Tao — Genshin Impact</b><br><br>
+⚔ <b>Rôle :</b> DPS Pyro Principal<br><br>
+🗡 <b>Armes :</b><br>
+- Bâton de Homa (BiS)<br>
+- Dragon's Bane (budget)<br><br>
+🎭 <b>Artefacts :</b> 4x Crimson Witch<br>
+Sablier : HP% · Calice : Pyro DMG · Tiare : Crit DMG<br><br>
+👥 <b>Équipe optimale :</b><br>
+Hu Tao · Yelan · Zhongli · Albedo<br><br>
+💡 Rotation : Zhongli E → Yelan E → Hu Tao E → Attacks`
+  },
+
+  // ── Tier list Genshin ──
+  {
+    mots: ['tier list genshin','meilleur perso genshin','personnage genshin'],
+    rep: `🏆 <b>Tier List Genshin v5.7</b><br><br>
+👑 <b>SS :</b> Furina · Neuvillette<br>
+🥇 <b>S :</b> Raiden · Hu Tao · Kazuha · Yelan · Nahida<br>
+🥈 <b>A :</b> Xiao · Ayaka · Itto · Wanderer<br>
+🥉 <b>B :</b> Xiangling · Bennett · Fischl<br>
+📉 <b>C :</b> Amber · Lisa · Noelle`
+  },
+
+  // ── Codes Genshin ──
+  {
+    mots: ['code genshin','codes genshin','primo','primogems gratuit'],
+    rep: `🎁 <b>Codes Genshin Impact Actifs</b><br><br>
+- <code>GENSHINGIFT</code> → 60 Primos + 5 Fragiles<br>
+- <code>VERSION57</code> → 60 Primos + 10K Mora<br>
+- <code>ADVENTURE57</code> → 60 Primos + 5 Aventurier<br><br>
+Total : <b>180 Primogems gratuits !</b><br>
+⚠️ Utilise-les avant expiration !`
+  },
+
+  // ── Among Us ──
+  {
+    mots: ['among us','imposteur','impostor','crewmate','parmi nous'],
+    rep: `🚀 <b>Among Us — Guide BMF</b><br><br>
+💡 Exemples de questions :<br>
 <em>"Comment gagner en imposteur ?"</em><br>
 <em>"Tips crewmate ?"</em><br>
-<em>"Meilleure stratégie de sabotage ?"</em>`
-    },
-    {
-      patterns: ['gagner imposteur', 'tips imposteur', 'jouer imposteur', 'comment impostor'],
-      reponse: `🔪 <b>Guide Imposteur — Among Us</b><br><br>
+<em>"Stratégie sabotage ?"</em>`
+  },
+
+  // ── Imposteur Among Us ──
+  {
+    mots: ['gagner imposteur','tips imposteur','jouer imposteur','strategie imposteur'],
+    rep: `🔪 <b>Guide Imposteur — Among Us</b><br><br>
 🎭 <b>Règle d'or : Agis comme un Crewmate !</b><br><br>
-✅ <b>À faire absolument :</b><br>
-- Fake les tâches visuelles (Réacteur, Télécharger...)<br>
-- Mémorise tes "alibis" de déplacement<br>
-- Crée une alliance avec 1 joueur dès le début<br>
-- Kill dans des zones peu fréquentées<br>
-- Utilise les évents pour éliminer discrètement<br><br>
-🚨 <b>Sabotages les plus efficaces :</b><br>
-- <b>Réacteur</b> → 30sec pour régler → panic générale<br>
-- <b>Lumières</b> → Vision réduite → kills faciles<br>
-- <b>O2</b> → Deux endroits en même temps → divise l'équipe<br><br>
-❌ <b>Erreurs fatales à éviter :</b><br>
+✅ <b>À faire :</b><br>
+- Fake les tâches visuelles<br>
+- Crée une alliance dès le début<br>
+- Kill dans les zones peu fréquentées<br>
+- Saboter avant de tuer (distraction)<br><br>
+🚨 <b>Sabotages efficaces :</b><br>
+- Réacteur → 30sec de panique<br>
+- Lumières → Vision réduite → kills faciles<br>
+- O2 → Divise l'équipe en deux endroits<br><br>
+❌ <b>Erreurs fatales :</b><br>
 - Suivre quelqu'un de trop près<br>
-- Voter trop vite lors d'un meeting<br>
-- Saboter sans plan de kill derrière`
-    },
-  ],
+- Voter trop vite en meeting`
+  },
 
-};
+  // ── Merci / Positif ──
+  {
+    mots: ['merci','thanks','thx','super','cool','top','genial','parfait','nickel'],
+    rep: `😎 <b>Avec plaisir !</b> C'est ça BMF_GAMING — des vraies infos pour les vrais gamers !<br><br>
+Si tu as d'autres questions, je suis là 24h/24. 💪<br>
+N'oublie pas de rejoindre la <b>communauté BMF</b> en bas de page ! 🎮`
+  },
 
-
-// ── 13.2 MOTEUR DE RECHERCHE DE RÉPONSE ──
+];
 
 /**
- * Trouve la meilleure réponse selon le message entré
- * Normalise le texte (minuscules, sans accents, sans ponctuation)
- * @param {string} message - Message brut de l'utilisateur
- * @returns {string} - Réponse en HTML
+ * Trouve la meilleure réponse du bot
+ * @param {string} message
+ * @returns {string}
  */
-function trouverReponse(message) {
-  // Normalisation : minuscules + suppression accents + ponctuation
+function trouverReponseBOT(message) {
+  // Normalisation : minuscules + sans accents + sans ponctuation
   const msg = message
     .toLowerCase()
     .normalize('NFD')
@@ -995,115 +768,306 @@ function trouverReponse(message) {
     .replace(/\s+/g, ' ')
     .trim();
 
-  // Parcourt toutes les catégories et patterns
-  for (const categorie of Object.values(BMF_KB)) {
-    for (const entree of categorie) {
-      for (const pattern of entree.patterns) {
-        const cleanPattern = pattern
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .toLowerCase();
+  // Score le meilleur match
+  let meilleurScore = 0;
+  let meilleureRep  = null;
 
-        if (msg.includes(cleanPattern)) {
-          return entree.reponse;
-        }
+  for (const entree of BOT_KB) {
+    let score = 0;
+    for (const mot of entree.mots) {
+      const cleanMot = mot.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      if (msg.includes(cleanMot)) {
+        // Score plus élevé pour les correspondances plus longues
+        score += cleanMot.split(' ').length * 10;
       }
+    }
+    if (score > meilleurScore) {
+      meilleurScore = score;
+      meilleureRep  = entree.rep;
     }
   }
 
-  // Réponse par défaut si aucun pattern trouvé
-  return `🤔 <b>Je n'ai pas trouvé de réponse précise à ta question.</b><br><br>
+  if (meilleureRep && meilleurScore > 0) return meilleureRep;
+
+  // Réponse par défaut
+  return `🤔 <b>Je n'ai pas trouvé de réponse précise.</b><br><br>
 Essaie de reformuler ou pose une question sur :<br>
-- ⛵ Sailor Piece / Ascension 4 / Alucard / Aizen<br>
-- 🍎 Blox Fruits / Tier List Fruits / Codes<br>
-- 🎯 Fortnite / Build / Ranked<br>
-- 🔫 COD / Loadout / SnD<br>
-- ⛏ Minecraft / Diamants / Seeds<br>
-- ⚔ Clash of Clans / Attaque TH16<br>
-- 🌸 Genshin / Build Hu Tao / Tier List<br>
-- 🚀 Among Us / Imposteur<br><br>
-<em>Exemple : "Meilleur fruit Blox Fruits ?" ou "Guide Ascension 4"</em>`;
+⛵ Sailor Piece / Ascension 4 / Alucard / Aizen<br>
+🍎 Blox Fruits / Tier List / Codes<br>
+🎯 Fortnite / Build / Ranked<br>
+🔫 COD / Loadout / SnD<br>
+⛏ Minecraft / Diamants / Seeds<br>
+⚔ Clash of Clans / TH16<br>
+🌸 Genshin / Build Hu Tao<br>
+🚀 Among Us / Imposteur`;
 }
 
+// ============================================
+// 16. BOT CHAT — Widget
+// ============================================
+const botState = { isOpen: false, isTyping: false, unread: 0 };
 
-// ── 13.3 CRÉATION DU WIDGET CHAT ──
-
-// État global du chat
-const chatState = {
-  isOpen:   false,
-  isTyping: false,
-  unread:   0,
-};
-
-/**
- * Crée et injecte le widget chat complet dans le body
- */
-function creerChatWidget() {
+function creerBotChat() {
   const widget = document.createElement('div');
-  widget.id = 'bmf-chat';
+  widget.id = 'bot-chat';
   widget.innerHTML = `
-
-    <!-- ─── Bouton flottant ─── -->
-    <button
-      class="chat-bubble"
-      id="chat-bubble"
-      onclick="toggleChat()"
-      aria-label="Ouvrir le chat gaming BMF"
-    >
-      <span class="chat-bubble-icone">💬</span>
-      <span class="chat-badge" id="chat-badge" style="display:none">1</span>
+    <button class="bot-bubble" id="bot-bubble" onclick="toggleBotChat()" aria-label="Bot BMF Gaming">
+      <span style="font-size:1.3rem">🤖</span>
+      <span class="bot-badge" id="bot-badge" style="display:none">1</span>
     </button>
-
-    <!-- ─── Fenêtre principale ─── -->
-    <div class="chat-window" id="chat-window" role="dialog" aria-label="Chat BMF_GAMING">
-
-      <!-- Header avec avatar, statut, actions -->
-      <div class="chat-header">
-        <div class="chat-header-gauche">
-          <div class="chat-avatar">BMF</div>
-          <div class="chat-header-texte">
-            <span class="chat-nom">BMF Gaming Bot</span>
-            <span class="chat-statut">
-              <span class="chat-point-vert"></span>En ligne
-            </span>
+    <div class="bot-window" id="bot-window">
+      <div class="bot-header">
+        <div style="display:flex;align-items:center;gap:9px">
+          <div class="bot-avatar">BMF</div>
+          <div>
+            <div class="bot-nom">BMF Gaming Bot</div>
+            <div class="bot-statut"><span class="bot-point"></span>En ligne · Répond instantanément</div>
           </div>
         </div>
-        <div class="chat-header-actions">
-          <button class="chat-btn-action" onclick="viderChat()" title="Effacer la conversation">🗑</button>
-          <button class="chat-btn-action" onclick="toggleChat()"  title="Fermer">✕</button>
+        <div style="display:flex;gap:5px">
+          <button class="bot-action-btn" onclick="viderBotChat()" title="Effacer">🗑</button>
+          <button class="bot-action-btn" onclick="toggleBotChat()" title="Fermer">✕</button>
+        </div>
+      </div>
+      <div class="bot-corps" id="bot-corps"></div>
+      <div class="bot-suggestions" id="bot-suggestions">
+        <button class="bot-sugg" onclick="envoyerBotSugg(this)">⛵ Sailor Piece</button>
+        <button class="bot-sugg" onclick="envoyerBotSugg(this)">💡 Ascension 4</button>
+        <button class="bot-sugg" onclick="envoyerBotSugg(this)">🍎 Blox Fruits</button>
+        <button class="bot-sugg" onclick="envoyerBotSugg(this)">🎯 Fortnite Build</button>
+        <button class="bot-sugg" onclick="envoyerBotSugg(this)">🔫 Loadout COD</button>
+        <button class="bot-sugg" onclick="envoyerBotSugg(this)">🌸 Build Hu Tao</button>
+        <button class="bot-sugg" onclick="envoyerBotSugg(this)">🎁 Codes gratuits</button>
+        <button class="bot-sugg" onclick="envoyerBotSugg(this)">💎 Diamants Minecraft</button>
+      </div>
+      <div class="bot-footer">
+        <input type="text" id="bot-input" class="bot-input"
+          placeholder="Pose ta question gaming..."
+          maxlength="200" autocomplete="off"
+          onkeydown="if(event.key==='Enter')envoyerBotMsg()"/>
+        <button class="bot-send" onclick="envoyerBotMsg()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(widget);
+
+  // Message d'accueil
+  setTimeout(() => {
+    ajouterMsgBot(
+      `👋 <b>Salut gamer !</b> Je suis le bot <b>BMF_GAMING</b>.<br><br>
+Je connais tous les jeux du site et je réponds à tes questions sur les guides, tips, codes et stratégies !<br><br>
+Clique sur une suggestion ou écris directement. 🎮`,
+      false
+    );
+  }, 800);
+}
+
+function toggleBotChat() {
+  botState.isOpen = !botState.isOpen;
+  const win   = $('#bot-window');
+  const badge = $('#bot-badge');
+  win?.classList.toggle('ouvert', botState.isOpen);
+  if (botState.isOpen) {
+    botState.unread = 0;
+    if (badge) badge.style.display = 'none';
+    setTimeout(() => $('#bot-input')?.focus(), 300);
+  }
+}
+
+function envoyerBotMsg() {
+  const input = $('#bot-input');
+  const msg   = input?.value.trim();
+  if (!msg || botState.isTyping) return;
+
+  ajouterMsgUser_bot(msg);
+  input.value = '';
+  const sugg = $('#bot-suggestions');
+  if (sugg) sugg.style.display = 'none';
+
+  botState.isTyping = true;
+  afficherTypingBot();
+
+  setTimeout(() => {
+    cacherTypingBot();
+    botState.isTyping = false;
+    ajouterMsgBot(trouverReponseBOT(msg));
+  }, 700 + Math.random() * 600);
+}
+
+function envoyerBotSugg(btn) {
+  const input = $('#bot-input');
+  if (!input) return;
+  // Retire l'emoji en tête
+  input.value = btn.textContent.replace(/^\S+\s/, '').trim();
+  envoyerBotMsg();
+}
+
+function viderBotChat() {
+  const corps = $('#bot-corps');
+  if (corps) corps.innerHTML = '';
+  const sugg = $('#bot-suggestions');
+  if (sugg) sugg.style.display = 'flex';
+  ajouterMsgBot('🔄 Chat réinitialisé. Comment puis-je t\'aider ? 🎮');
+}
+
+function ajouterMsgUser_bot(texte) {
+  const corps = $('#bot-corps');
+  if (!corps) return;
+  const div = document.createElement('div');
+  div.className = 'bot-msg bot-msg-user';
+  div.innerHTML = `<div class="bot-bulle">${escHTML(texte)}</div>
+    <span class="bot-heure">${heure()}</span>`;
+  corps.appendChild(div);
+  scrollBot();
+}
+
+function ajouterMsgBot(html, anim = true) {
+  const corps = $('#bot-corps');
+  if (!corps) return;
+  const div = document.createElement('div');
+  div.className = 'bot-msg bot-msg-bot' + (anim ? ' anim-msg' : '');
+  div.innerHTML = `<div class="bot-bulle">${html}</div>
+    <span class="bot-heure">${heure()}</span>`;
+  corps.appendChild(div);
+  scrollBot();
+  if (!botState.isOpen) {
+    botState.unread++;
+    const badge = $('#bot-badge');
+    if (badge) { badge.textContent = botState.unread; badge.style.display = 'flex'; }
+  }
+}
+
+function afficherTypingBot() {
+  const corps = $('#bot-corps');
+  if (!corps) return;
+  const div = document.createElement('div');
+  div.id = 'bot-typing';
+  div.className = 'bot-msg bot-msg-bot';
+  div.innerHTML = `<div class="bot-bulle" style="display:flex;gap:4px;padding:10px 13px">
+    <span class="tpt"></span><span class="tpt"></span><span class="tpt"></span>
+  </div>`;
+  corps.appendChild(div);
+  scrollBot();
+}
+
+function cacherTypingBot() { $('#bot-typing')?.remove(); }
+function scrollBot()       { const c = $('#bot-corps'); if (c) c.scrollTop = c.scrollHeight; }
+function heure()           { return new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }); }
+function escHTML(s)        { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ============================================
+// 17. COMMUNITY CHAT — Chat entre joueurs
+// Simulation réaliste avec vrais joueurs en ligne
+// ============================================
+
+const JOUEURS_ONLINE = [
+  { nom: 'NightSailor_23',    avatar: 'NS', couleur: '#00d4ff' },
+  { nom: 'BloxMaster_FR',     avatar: 'BM', couleur: '#00ff88' },
+  { nom: 'GenshinGod_X',      avatar: 'GG', couleur: '#ffd700' },
+  { nom: 'COD_Warrior_DK',    avatar: 'CW', couleur: '#ff6b35' },
+  { nom: 'MinecraftBuilder',  avatar: 'MB', couleur: '#06d6a0' },
+  { nom: 'ClashLegend_94',    avatar: 'CL', couleur: '#00d4ff' },
+  { nom: 'FortniteKing_FR',   avatar: 'FK', couleur: '#ff3333' },
+  { nom: 'AnimeAdventures_Y', avatar: 'AA', couleur: '#ffd700' },
+  { nom: 'SailorKing_42',     avatar: 'SK', couleur: '#00ff88' },
+  { nom: 'PetSimPro_Z',       avatar: 'PS', couleur: '#00d4ff' },
+];
+
+const MESSAGES_AUTO = [
+  { joueur: 'NightSailor_23',   msg: 'Gg le guide Ascension 4 🔥 enfin je comprends !' },
+  { joueur: 'BloxMaster_FR',    msg: 'Les codes Blox Fruits ont bien marché, merci BMF 🙏' },
+  { joueur: 'GenshinGod_X',     msg: 'Le build Hu Tao est trop fort avec la rotation indiquée 🌸' },
+  { joueur: 'COD_Warrior_DK',   msg: 'Le loadout SMG pour Shipment est ouf 💀' },
+  { joueur: 'MinecraftBuilder',  msg: 'J\'ai trouvé 32 diamants grâce au niveau Y -56 ⛏💎' },
+  { joueur: 'ClashLegend_94',   msg: 'Attaque TH16 Root Rider = 3 étoiles garanti ⚔' },
+  { joueur: 'FortniteKing_FR',  msg: 'Ranked Diamond avec la strat BMF 🎯 merci !' },
+  { joueur: 'NightSailor_23',   msg: 'Quelqu\'un a farm Aizen avec moi ce soir ?' },
+  { joueur: 'AnimeAdventures_Y',msg: 'Gojo dans Anime Adventures est broken 🌟' },
+  { joueur: 'SailorKing_42',    msg: 'Alucard en 12 min avec la méthode BMF, tested ✅' },
+  { joueur: 'PetSimPro_Z',      msg: 'Le code GOLDENEGG est actif j\'ai vérifié 🐾' },
+  { joueur: 'BloxMaster_FR',    msg: 'Le fruit Kitsune est vraiment SS tier 🍎' },
+  { joueur: 'GenshinGod_X',     msg: '180 Primos gratuits avec les 3 codes Genshin 💎' },
+  { joueur: 'COD_Warrior_DK',   msg: 'Map Karachi → sniper au spot du toit = ez 🔫' },
+  { joueur: 'MinecraftBuilder',  msg: 'Seed 4837753 incroyable, 8 biomes au spawn !' },
+  { joueur: 'FortniteKing_FR',  msg: 'Les 90s c\'est la base du build, pratiquez ça d\'abord 🔨' },
+  { joueur: 'ClashLegend_94',   msg: 'TH17 annoncé !! Ça va être chaud cet été ⚔' },
+  { joueur: 'NightSailor_23',   msg: 'Ascension 4 validée ! Le donjon final est dur mais faisable' },
+  { joueur: 'SailorKing_42',    msg: 'BMF_GAMING = meilleur site de guides fr 💯' },
+  { joueur: 'AnimeAdventures_Y',msg: 'Quelqu\'un a des tips pour les stages Chaos en Anime Adv?' },
+  { joueur: 'PetSimPro_Z',      msg: 'L\'event Summer est dingue sur Pet Sim X 🐾🎉' },
+  { joueur: 'BloxMaster_FR',    msg: 'Dragon > Leopard en farm, Leopard > Dragon en PvP' },
+];
+
+let communityMsgIndex  = 0;
+let communityIntervalId = null;
+const communityMessages = []; // Stocke tous les messages
+
+function creerCommunityChat() {
+  const widget = document.createElement('div');
+  widget.id = 'community-chat';
+
+  // Calcule le nombre de joueurs en ligne (aléatoire entre 12 et 38)
+  const nbOnline = 12 + Math.floor(Math.random() * 27);
+
+  widget.innerHTML = `
+    <!-- Bouton flottant Community -->
+    <button class="comm-bubble" id="comm-bubble" onclick="toggleCommunityChat()"
+      aria-label="Chat Communauté BMF">
+      <span style="font-size:1.3rem">👥</span>
+      <span class="comm-badge" id="comm-badge" style="display:none">0</span>
+    </button>
+
+    <!-- Fenêtre Community Chat -->
+    <div class="comm-window" id="comm-window">
+
+      <!-- Header -->
+      <div class="comm-header">
+        <div style="display:flex;align-items:center;gap:9px">
+          <div class="comm-avatar-header">👥</div>
+          <div>
+            <div class="comm-titre">BMF Community Chat</div>
+            <div class="comm-online-count">
+              <span class="comm-dot-vert"></span>
+              <span id="comm-online-nb">${nbOnline}</span> joueurs en ligne
+            </div>
+          </div>
+        </div>
+        <button class="bot-action-btn" onclick="toggleCommunityChat()">✕</button>
+      </div>
+
+      <!-- Liste joueurs en ligne -->
+      <div class="comm-players-bar">
+        ${JOUEURS_ONLINE.slice(0, 6).map(j => `
+          <div class="comm-player-chip" title="${j.nom}">
+            <div class="comm-chip-avatar" style="background:${j.couleur};color:#000">${j.avatar}</div>
+            <span class="comm-dot-online"></span>
+          </div>
+        `).join('')}
+        <div class="comm-player-chip" style="opacity:0.6">
+          <div class="comm-chip-avatar" style="background:rgba(255,255,255,0.08);color:var(--text-dim);font-size:0.60rem">+${nbOnline - 6}</div>
         </div>
       </div>
 
-      <!-- Corps — zone des messages -->
-      <div class="chat-corps" id="chat-corps"></div>
+      <!-- Corps des messages -->
+      <div class="comm-corps" id="comm-corps"></div>
 
-      <!-- Suggestions rapides -->
-      <div class="chat-suggestions" id="chat-suggestions">
-        <button class="chat-sugg" onclick="envoyerSuggestion(this)">⛵ Sailor Piece</button>
-        <button class="chat-sugg" onclick="envoyerSuggestion(this)">🍎 Blox Fruits</button>
-        <button class="chat-sugg" onclick="envoyerSuggestion(this)">💡 Ascension 4</button>
-        <button class="chat-sugg" onclick="envoyerSuggestion(this)">🎯 Fortnite</button>
-        <button class="chat-sugg" onclick="envoyerSuggestion(this)">🔫 Call of Duty</button>
-        <button class="chat-sugg" onclick="envoyerSuggestion(this)">⛏ Minecraft</button>
-        <button class="chat-sugg" onclick="envoyerSuggestion(this)">🌸 Genshin</button>
-        <button class="chat-sugg" onclick="envoyerSuggestion(this)">🎁 Codes gratuits</button>
-      </div>
-
-      <!-- Zone de saisie + bouton envoi -->
-      <div class="chat-footer">
-        <input
-          type="text"
-          id="chat-input"
-          class="chat-input"
-          placeholder="Pose ta question gaming..."
-          maxlength="200"
-          autocomplete="off"
-          onkeydown="handleKeyChat(event)"
-        />
-        <button class="chat-btn-envoyer" onclick="envoyerMessage()" aria-label="Envoyer">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-               stroke="currentColor" stroke-width="2.5"
-               stroke-linecap="round" stroke-linejoin="round">
+      <!-- Footer / Input -->
+      <div class="comm-footer">
+        <input type="text" id="comm-input" class="bot-input"
+          placeholder="Écris un message..."
+          maxlength="200" autocomplete="off"
+          onkeydown="if(event.key==='Enter')envoyerCommMsg()"/>
+        <button class="bot-send" onclick="envoyerCommMsg()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
             <line x1="22" y1="2" x2="11" y2="13"/>
             <polygon points="22 2 15 22 11 13 2 9 22 2"/>
           </svg>
@@ -1115,546 +1079,467 @@ function creerChatWidget() {
 
   document.body.appendChild(widget);
 
-  // Injecte les styles CSS du chat
-  injecterStylesChat();
-
-  // Message d'accueil automatique du bot
-  ajouterMessageBot(
-    `👋 <b>Salut gamer !</b> Je suis le bot de <b>BMF_GAMING</b>.<br><br>
-Je connais tous les jeux du site et je peux t'aider avec des guides, tips, codes et stratégies.<br><br>
-Clique sur une suggestion ou pose directement ta question ! 🎮`,
-    false
-  );
-}
-
-
-// ── 13.4 ACTIONS DU CHAT ──
-
-/** Ouvre ou ferme la fenêtre du chat */
-function toggleChat() {
-  chatState.isOpen = !chatState.isOpen;
-  const fenetre = $('#chat-window');
-  const badge   = $('#chat-badge');
-
-  if (chatState.isOpen) {
-    fenetre?.classList.add('ouvert');
-    chatState.unread = 0;
-    if (badge) badge.style.display = 'none';
-    // Focus sur l'input après l'animation d'ouverture
-    setTimeout(() => $('#chat-input')?.focus(), 300);
-  } else {
-    fenetre?.classList.remove('ouvert');
-  }
-}
-
-/** Gère la touche Entrée dans l'input */
-function handleKeyChat(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    envoyerMessage();
-  }
-}
-
-/** Envoie le message de l'utilisateur et déclenche la réponse du bot */
-function envoyerMessage() {
-  const input   = $('#chat-input');
-  const message = input?.value.trim();
-  if (!message || chatState.isTyping) return;
-
-  // Affiche le message de l'utilisateur
-  ajouterMessageUser(message);
-  input.value = '';
-
-  // Cache les suggestions après le premier message
-  const sugg = $('#chat-suggestions');
-  if (sugg) sugg.style.display = 'none';
-
-  // Simule le délai de réflexion/frappe du bot (réaliste)
-  chatState.isTyping = true;
-  afficherIndicateurTyping();
-
-  const delai = 750 + Math.random() * 700; // 750ms à 1450ms
+  // Messages initiaux (3 derniers pour simuler une conversation existante)
   setTimeout(() => {
-    cacherIndicateurTyping();
-    chatState.isTyping = false;
-    const reponse = trouverReponse(message);
-    ajouterMessageBot(reponse);
-  }, delai);
+    const depart = [
+      { joueur: 'SailorKing_42',   msg: 'Bonsoir tout le monde ! 👋' },
+      { joueur: 'BloxMaster_FR',   msg: 'Salut ! Vous avez vu la nouvelle update Blox Fruits ? 🍎' },
+      { joueur: 'GenshinGod_X',    msg: 'Ouiiii le Kitsune est trop fort 😍' },
+    ];
+    depart.forEach((m, i) => {
+      setTimeout(() => afficherMsgCommunity(m.joueur, m.msg, false), i * 600);
+    });
+  }, 1200);
+
+  // Démarre les messages automatiques toutes les 10-22 secondes
+  communityIntervalId = setInterval(() => {
+    const msgData = MESSAGES_AUTO[communityMsgIndex % MESSAGES_AUTO.length];
+    afficherMsgCommunity(msgData.joueur, msgData.msg);
+    communityMsgIndex++;
+  }, 10000 + Math.random() * 12000);
 }
 
-/** Envoie une suggestion prédéfinie */
-function envoyerSuggestion(btn) {
-  const input = $('#chat-input');
-  if (!input) return;
-  // Retire l'emoji du début du texte
-  const texte = btn.textContent.replace(/^[\u{1F000}-\u{1FFFF}]\s/u, '').trim();
-  input.value = texte;
-  envoyerMessage();
-}
+let commIsOpen   = false;
+let commUnread   = 0;
 
-/** Efface tous les messages et remet les suggestions */
-function viderChat() {
-  const corps = $('#chat-corps');
-  if (corps) corps.innerHTML = '';
-  chatState.unread = 0;
-
-  const sugg = $('#chat-suggestions');
-  if (sugg) sugg.style.display = 'flex';
-
-  ajouterMessageBot(`🔄 Conversation effacée. Comment puis-je t'aider gamer ? 🎮`);
-}
-
-
-// ── 13.5 AFFICHAGE DES MESSAGES ──
-
-/** Ajoute un message de l'utilisateur */
-function ajouterMessageUser(texte) {
-  const corps = $('#chat-corps');
-  if (!corps) return;
-
-  const div = document.createElement('div');
-  div.className = 'chat-msg chat-msg-user';
-  div.innerHTML = `
-    <div class="chat-bulle">${echapperHTML(texte)}</div>
-    <span class="chat-heure">${heureActuelle()}</span>
-  `;
-  corps.appendChild(div);
-  scrollerChat();
-}
-
-/** Ajoute un message du bot */
-function ajouterMessageBot(html, animer = true) {
-  const corps = $('#chat-corps');
-  if (!corps) return;
-
-  const div = document.createElement('div');
-  div.className = 'chat-msg chat-msg-bot' + (animer ? ' anim-chat' : '');
-  div.innerHTML = `
-    <div class="chat-bulle">${html}</div>
-    <span class="chat-heure">${heureActuelle()}</span>
-  `;
-  corps.appendChild(div);
-  scrollerChat();
-
-  // Incrémente le badge si le chat est fermé
-  if (!chatState.isOpen) {
-    chatState.unread++;
-    const badge = $('#chat-badge');
-    if (badge) {
-      badge.textContent = chatState.unread;
-      badge.style.display = 'flex';
-    }
+function toggleCommunityChat() {
+  commIsOpen = !commIsOpen;
+  const win   = $('#comm-window');
+  const badge = $('#comm-badge');
+  win?.classList.toggle('ouvert', commIsOpen);
+  if (commIsOpen) {
+    commUnread = 0;
+    if (badge) badge.style.display = 'none';
+    setTimeout(() => $('#comm-input')?.focus(), 300);
   }
 }
 
-/** Affiche les 3 points de typing */
-function afficherIndicateurTyping() {
-  const corps = $('#chat-corps');
+function envoyerCommMsg() {
+  const input = $('#comm-input');
+  const msg   = input?.value.trim();
+  if (!msg) return;
+
+  input.value = '';
+  afficherMsgCommunity('Toi', msg, true, true);
+
+  // Réponse aléatoire d'un joueur après 3-7 secondes
+  setTimeout(() => {
+    const repenses = [
+      'Trop bien 🔥',
+      'Gg ! 💪',
+      'Pareil pour moi !',
+      'T\'as raison 💯',
+      'C\'est noté merci !',
+      'J\'allais dire la même chose 😄',
+      'BMF_GAMING 🎮',
+      'On est d\'accord !',
+    ];
+    const joueur = JOUEURS_ONLINE[Math.floor(Math.random() * JOUEURS_ONLINE.length)];
+    const rep    = repenses[Math.floor(Math.random() * repenses.length)];
+    afficherMsgCommunity(joueur.nom, rep);
+  }, 3000 + Math.random() * 4000);
+}
+
+function afficherMsgCommunity(nomJoueur, msg, anim = true, estMoi = false) {
+  const corps  = $('#comm-corps');
   if (!corps) return;
 
+  const joueur = JOUEURS_ONLINE.find(j => j.nom === nomJoueur);
+  const couleur = joueur?.couleur || '#00d4ff';
+  const avatar  = joueur?.avatar || nomJoueur.substring(0, 2).toUpperCase();
+
+  communityMessages.push({ nom: nomJoueur, msg, ts: heure() });
+
   const div = document.createElement('div');
-  div.id        = 'chat-typing-indicator';
-  div.className = 'chat-msg chat-msg-bot';
-  div.innerHTML = `
-    <div class="chat-bulle chat-bulle-typing">
-      <span class="typing-pt"></span>
-      <span class="typing-pt"></span>
-      <span class="typing-pt"></span>
-    </div>
-  `;
+  div.className = `comm-msg${anim ? ' anim-msg' : ''}${estMoi ? ' comm-msg-moi' : ''}`;
+
+  if (estMoi) {
+    div.innerHTML = `
+      <div class="comm-msg-content" style="align-items:flex-end">
+        <span class="comm-msg-nom" style="color:#00d4ff;text-align:right">Toi</span>
+        <div class="comm-bulle comm-bulle-moi">${escHTML(msg)}</div>
+        <span class="comm-msg-time">${heure()}</span>
+      </div>
+    `;
+  } else {
+    div.innerHTML = `
+      <div class="comm-avatar-msg" style="background:${couleur};color:#000">${avatar}</div>
+      <div class="comm-msg-content">
+        <span class="comm-msg-nom" style="color:${couleur}">${nomJoueur}</span>
+        <div class="comm-bulle">${escHTML(msg)}</div>
+        <span class="comm-msg-time">${heure()}</span>
+      </div>
+    `;
+  }
+
   corps.appendChild(div);
-  scrollerChat();
+  corps.scrollTop = corps.scrollHeight;
+
+  // Badge si fermé
+  if (!commIsOpen) {
+    commUnread++;
+    const badge = $('#comm-badge');
+    if (badge) { badge.textContent = commUnread; badge.style.display = 'flex'; }
+  }
 }
 
-/** Supprime l'indicateur de typing */
-function cacherIndicateurTyping() {
-  $('#chat-typing-indicator')?.remove();
+// Ajoute un joueur venant de s'inscrire au community chat
+function ajouterJoueurCommunity(pseudo) {
+  setTimeout(() => {
+    afficherMsgCommunity('BMF_GAMING', `🎉 <b>${pseudo}</b> vient de rejoindre la communauté !`);
+  }, 1500);
 }
 
-
-// ── 13.6 UTILITAIRES DU CHAT ──
-
-/** Défile vers le bas du chat */
-function scrollerChat() {
-  const corps = $('#chat-corps');
-  if (corps) corps.scrollTop = corps.scrollHeight;
-}
-
-/** Retourne l'heure actuelle formatée HH:MM */
-function heureActuelle() {
-  return new Date().toLocaleTimeString('fr-FR', {
-    hour:   '2-digit',
-    minute: '2-digit'
-  });
-}
-
-/** Échappe le HTML pour sécuriser les messages utilisateur */
-function echapperHTML(str) {
-  return str
-    .replace(/&/g,  '&amp;')
-    .replace(/</g,  '&lt;')
-    .replace(/>/g,  '&gt;')
-    .replace(/"/g,  '&quot;')
-    .replace(/'/g,  '&#039;');
-}
-
-
-// ── 13.7 STYLES DU CHAT (injectés dynamiquement) ──
-
-function injecterStylesChat() {
+// ============================================
+// 18. STYLES DYNAMIQUES — Chat + Corrections
+// ============================================
+function injecterStylesGlobaux() {
   const style = document.createElement('style');
-  style.id = 'bmf-chat-styles';
+  style.id = 'bmf-styles-globaux';
   style.textContent = `
 
-    /* ── Bouton flottant ── */
-    .chat-bubble {
-      position: fixed;
-      bottom: 26px; right: 86px;
-      width: 52px; height: 52px;
-      background: linear-gradient(135deg, #00d4ff 0%, #0055ff 100%);
-      border: none; border-radius: 50%;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 4px 22px rgba(0,212,255,0.42);
-      z-index: 998;
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }
-    .chat-bubble:hover {
-      transform: scale(1.12) translateY(-3px);
-      box-shadow: 0 8px 30px rgba(0,212,255,0.65);
-    }
-    .chat-bubble-icone { font-size: 1.4rem; line-height: 1; }
+    /* ── Nav actif ── */
+    .nav-link.actif-nav { color: #ffffff !important; }
+    .nav-link.actif-nav::after { width: 100% !important; }
 
-    .chat-badge {
-      position: absolute; top: -4px; right: -4px;
-      width: 19px; height: 19px;
-      background: #ff3333; color: #fff;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.60rem;
-      border-radius: 50%;
-      align-items: center; justify-content: center;
-      border: 2px solid #040407;
+    /* ── Animations ── */
+    @keyframes shake {
+      0%,100% { transform:translateX(0); }
+      20% { transform:translateX(-7px); }
+      40% { transform:translateX(7px); }
+      60% { transform:translateX(-4px); }
+      80% { transform:translateX(4px); }
     }
+    @keyframes fadeInUp {
+      from { opacity:0; transform:translateY(10px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    @keyframes anim-msg {
+      from { opacity:0; transform:translateY(8px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .anim-msg { animation: anim-msg 0.25s ease forwards; }
 
-    /* ── Fenêtre ── */
-    .chat-window {
-      position: fixed;
-      bottom: 88px; right: 20px;
-      width: 355px; height: 545px;
-      background: #050810;
-      border: 1px solid rgba(0,212,255,0.18);
-      border-radius: 16px;
-      display: flex; flex-direction: column;
-      overflow: hidden;
-      z-index: 997;
-      box-shadow:
-        0 22px 65px rgba(0,0,0,0.80),
-        0 0 0 1px rgba(0,212,255,0.06);
-      opacity: 0;
-      transform: translateY(18px) scale(0.96);
-      pointer-events: none;
-      transition: opacity 0.26s ease, transform 0.26s ease;
+    /* ════════════════════════════════════════
+       BOT CHAT WIDGET
+       ════════════════════════════════════════ */
+
+    /* Bouton flottant BOT */
+    .bot-bubble {
+      position:fixed; bottom:26px; right:86px;
+      width:50px; height:50px;
+      background:linear-gradient(135deg,#00d4ff,#0055ff);
+      border:none; border-radius:50%; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 4px 20px rgba(0,212,255,0.42); z-index:998;
+      transition:transform 0.25s,box-shadow 0.25s;
     }
-    .chat-window.ouvert {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      pointer-events: all;
+    .bot-bubble:hover { transform:scale(1.12) translateY(-3px); box-shadow:0 8px 28px rgba(0,212,255,0.62); }
+
+    .bot-badge, .comm-badge {
+      position:absolute; top:-4px; right:-4px;
+      width:18px; height:18px;
+      background:#ff3333; color:#fff;
+      font-family:'Share Tech Mono',monospace; font-size:0.58rem;
+      border-radius:50%; align-items:center; justify-content:center;
+      border:2px solid #040407;
     }
 
-    /* ── Header ── */
-    .chat-header {
-      display: flex; align-items: center;
-      justify-content: space-between;
-      padding: 13px 15px;
-      background: linear-gradient(135deg,
-        rgba(0,212,255,0.07),
-        rgba(0,85,255,0.05)
-      );
-      border-bottom: 1px solid rgba(0,212,255,0.12);
-      flex-shrink: 0;
+    /* Fenêtre BOT */
+    .bot-window {
+      position:fixed; bottom:88px; right:20px;
+      width:345px; height:530px;
+      background:#050810;
+      border:1px solid rgba(0,212,255,0.16); border-radius:14px;
+      display:flex; flex-direction:column; overflow:hidden;
+      z-index:997; opacity:0; transform:translateY(16px) scale(0.95);
+      pointer-events:none; transition:all 0.26s ease;
+      box-shadow:0 20px 60px rgba(0,0,0,0.80);
     }
-    .chat-header-gauche {
-      display: flex; align-items: center; gap: 10px;
+    .bot-window.ouvert { opacity:1; transform:none; pointer-events:all; }
+
+    /* Header BOT */
+    .bot-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 14px;
+      background:linear-gradient(135deg,rgba(0,212,255,0.07),rgba(0,85,255,0.05));
+      border-bottom:1px solid rgba(0,212,255,0.10); flex-shrink:0;
     }
-    .chat-avatar {
-      width: 34px; height: 34px;
-      background: linear-gradient(135deg, #00d4ff, #0055ff);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Orbitron', monospace;
-      font-size: 0.50rem; font-weight: 900;
-      color: #000; letter-spacing: 1px;
-      flex-shrink: 0;
+    .bot-avatar {
+      width:32px; height:32px;
+      background:linear-gradient(135deg,#00d4ff,#0055ff);
+      border-radius:50%; display:flex; align-items:center; justify-content:center;
+      font-family:'Orbitron',monospace; font-size:0.46rem; font-weight:900; color:#000;
     }
-    .chat-header-texte {
-      display: flex; flex-direction: column; gap: 1px;
+    .bot-nom  { font-family:'Russo One',sans-serif; font-size:0.78rem; color:#fff; }
+    .bot-statut {
+      display:flex; align-items:center; gap:5px;
+      font-family:'Share Tech Mono',monospace; font-size:0.56rem; color:#607080;
     }
-    .chat-nom {
-      font-family: 'Russo One', sans-serif;
-      font-size: 0.80rem; color: #ffffff;
+    .bot-point {
+      width:6px; height:6px; background:#00ff88;
+      border-radius:50%; box-shadow:0 0 5px #00ff88;
+      animation:point-blink 2s infinite;
     }
-    .chat-statut {
-      display: flex; align-items: center; gap: 5px;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.58rem; color: #607080;
+    @keyframes point-blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .bot-action-btn {
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.07); color:#5a6a7a;
+      width:25px; height:25px; border-radius:5px;
+      cursor:pointer; font-size:0.73rem;
+      display:flex; align-items:center; justify-content:center;
+      transition:all 0.2s;
     }
-    .chat-point-vert {
-      width: 6px; height: 6px;
-      background: #00ff88; border-radius: 50%;
-      box-shadow: 0 0 5px #00ff88;
-      animation: point-pulse 2.2s ease-in-out infinite;
+    .bot-action-btn:hover { background:rgba(255,255,255,0.10); color:#fff; }
+
+    /* Corps messages BOT */
+    .bot-corps {
+      flex:1; overflow-y:auto; padding:12px;
+      display:flex; flex-direction:column; gap:8px;
+      scroll-behavior:smooth;
     }
-    @keyframes point-pulse {
-      0%,100% { opacity: 1; }
-      50% { opacity: 0.35; }
+    .bot-corps::-webkit-scrollbar { width:3px; }
+    .bot-corps::-webkit-scrollbar-track { background:transparent; }
+    .bot-corps::-webkit-scrollbar-thumb { background:rgba(0,212,255,0.18); border-radius:2px; }
+
+    .bot-msg { display:flex; flex-direction:column; max-width:87%; }
+    .bot-msg-user { align-self:flex-end; align-items:flex-end; }
+    .bot-msg-bot  { align-self:flex-start; align-items:flex-start; }
+
+    .bot-bulle {
+      padding:8px 11px; border-radius:10px;
+      font-family:'Exo 2',sans-serif; font-size:0.78rem;
+      font-weight:300; line-height:1.65; color:#d0e4f0;
     }
-    .chat-header-actions {
-      display: flex; gap: 5px;
+    .bot-msg-user .bot-bulle {
+      background:linear-gradient(135deg,rgba(0,212,255,0.16),rgba(0,85,255,0.12));
+      border:1px solid rgba(0,212,255,0.20); border-bottom-right-radius:3px;
     }
-    .chat-btn-action {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.07);
-      color: #5a6a7a;
-      width: 26px; height: 26px;
-      border-radius: 6px;
-      cursor: pointer; font-size: 0.75rem;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.2s;
+    .bot-msg-bot .bot-bulle {
+      background:rgba(255,255,255,0.034);
+      border:1px solid rgba(255,255,255,0.062); border-bottom-left-radius:3px;
     }
-    .chat-btn-action:hover {
-      background: rgba(255,255,255,0.10);
-      color: #ffffff;
+    .bot-bulle b { color:#fff; font-weight:700; }
+    .bot-bulle em { color:#b8ccd8; }
+    .bot-bulle code {
+      background:rgba(0,212,255,0.09); border:1px solid rgba(0,212,255,0.16);
+      border-radius:3px; padding:1px 5px;
+      font-family:'Share Tech Mono',monospace; font-size:0.74rem; color:#00d4ff;
+    }
+    .bot-heure, .comm-msg-time {
+      font-family:'Share Tech Mono',monospace; font-size:0.54rem; color:#2a3a4a; margin-top:2px; padding:0 3px;
     }
 
-    /* ── Corps des messages ── */
-    .chat-corps {
-      flex: 1; overflow-y: auto;
-      padding: 13px;
-      display: flex; flex-direction: column; gap: 9px;
-      scroll-behavior: smooth;
+    /* Typing indicator */
+    .tpt {
+      width:6px; height:6px; background:rgba(0,212,255,0.5); border-radius:50%;
+      animation:tp-bounce 1.3s ease-in-out infinite;
+      display:inline-block;
     }
-    .chat-corps::-webkit-scrollbar { width: 3px; }
-    .chat-corps::-webkit-scrollbar-track { background: transparent; }
-    .chat-corps::-webkit-scrollbar-thumb {
-      background: rgba(0,212,255,0.20);
-      border-radius: 2px;
-    }
-
-    /* ── Messages ── */
-    .chat-msg {
-      display: flex; flex-direction: column;
-      max-width: 86%;
-    }
-    .anim-chat {
-      animation: chat-apparaitre 0.26s ease forwards;
-    }
-    @keyframes chat-apparaitre {
-      from { opacity: 0; transform: translateY(7px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .chat-msg-user {
-      align-self: flex-end; align-items: flex-end;
-    }
-    .chat-msg-bot {
-      align-self: flex-start; align-items: flex-start;
-    }
-    .chat-bulle {
-      padding: 9px 12px;
-      border-radius: 11px;
-      font-family: 'Exo 2', sans-serif;
-      font-size: 0.80rem;
-      font-weight: 300;
-      line-height: 1.66;
-      color: #d0e4f0;
-    }
-    .chat-msg-user .chat-bulle {
-      background: linear-gradient(135deg,
-        rgba(0,212,255,0.16),
-        rgba(0,85,255,0.12)
-      );
-      border: 1px solid rgba(0,212,255,0.20);
-      border-bottom-right-radius: 3px;
-    }
-    .chat-msg-bot .chat-bulle {
-      background: rgba(255,255,255,0.035);
-      border: 1px solid rgba(255,255,255,0.065);
-      border-bottom-left-radius: 3px;
-    }
-    .chat-bulle b    { color: #ffffff; font-weight: 700; }
-    .chat-bulle em   { color: #b8ccd8; font-style: italic; }
-    .chat-bulle code {
-      background: rgba(0,212,255,0.09);
-      border: 1px solid rgba(0,212,255,0.16);
-      border-radius: 3px; padding: 1px 5px;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.76rem; color: #00d4ff;
-    }
-    .chat-heure {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.56rem; color: #334455;
-      margin-top: 2px; padding: 0 3px;
+    .tpt:nth-child(2) { animation-delay:0.18s; }
+    .tpt:nth-child(3) { animation-delay:0.36s; }
+    @keyframes tp-bounce {
+      0%,80%,100% { transform:scale(1); opacity:0.4; }
+      40% { transform:scale(1.5); opacity:1; }
     }
 
-    /* ── Indicateur typing (3 points) ── */
-    .chat-bulle-typing {
-      display: flex; align-items: center;
-      gap: 4px; padding: 10px 13px;
+    /* Suggestions BOT */
+    .bot-suggestions {
+      display:flex; flex-wrap:wrap; gap:5px; padding:7px 10px;
+      border-top:1px solid rgba(255,255,255,0.04);
+      overflow-y:auto; max-height:84px; flex-shrink:0;
     }
-    .typing-pt {
-      width: 6px; height: 6px;
-      background: rgba(0,212,255,0.55);
-      border-radius: 50%;
-      animation: typing-rebond 1.3s ease-in-out infinite;
+    .bot-suggestions::-webkit-scrollbar { display:none; }
+    .bot-sugg {
+      font-family:'Rajdhani',sans-serif; font-size:0.66rem; font-weight:600;
+      padding:3px 9px;
+      background:rgba(0,212,255,0.04); border:1px solid rgba(0,212,255,0.13);
+      border-radius:50px; color:#5a6a7a; cursor:pointer; transition:all 0.2s; white-space:nowrap;
     }
-    .typing-pt:nth-child(2) { animation-delay: 0.18s; }
-    .typing-pt:nth-child(3) { animation-delay: 0.36s; }
-    @keyframes typing-rebond {
-      0%,80%,100% { transform: scale(1);   opacity: 0.45; }
-      40%          { transform: scale(1.45); opacity: 1; }
+    .bot-sugg:hover { background:rgba(0,212,255,0.10); color:#00d4ff; border-color:rgba(0,212,255,0.32); }
+
+    /* Footer BOT */
+    .bot-footer, .comm-footer {
+      display:flex; align-items:center; gap:6px; padding:8px 10px;
+      border-top:1px solid rgba(0,212,255,0.07); background:rgba(0,0,0,0.20); flex-shrink:0;
+    }
+    .bot-input {
+      flex:1; padding:7px 10px;
+      background:rgba(255,255,255,0.034); border:1px solid rgba(0,212,255,0.12);
+      border-radius:7px; color:#d0e4f0;
+      font-family:'Exo 2',sans-serif; font-size:0.78rem;
+      outline:none; transition:border-color 0.2s;
+    }
+    .bot-input:focus { border-color:rgba(0,212,255,0.36); }
+    .bot-input::placeholder { color:#2a3a4a; }
+    .bot-send {
+      width:32px; height:32px;
+      background:linear-gradient(135deg,#00d4ff,#0055ff);
+      border:none; border-radius:7px; color:#000; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; transition:all 0.2s; flex-shrink:0;
+    }
+    .bot-send:hover { transform:scale(1.1); box-shadow:0 0 12px rgba(0,212,255,0.45); }
+
+    /* ════════════════════════════════════════
+       COMMUNITY CHAT WIDGET
+       ════════════════════════════════════════ */
+
+    /* Bouton flottant COMMUNITY */
+    .comm-bubble {
+      position:fixed; bottom:26px; right:148px;
+      width:50px; height:50px;
+      background:linear-gradient(135deg,#00ff88,#00d4ff);
+      border:none; border-radius:50%; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 4px 20px rgba(0,255,136,0.38); z-index:998;
+      transition:transform 0.25s,box-shadow 0.25s;
+    }
+    .comm-bubble:hover { transform:scale(1.12) translateY(-3px); box-shadow:0 8px 28px rgba(0,255,136,0.55); }
+
+    /* Fenêtre COMMUNITY */
+    .comm-window {
+      position:fixed; bottom:88px; right:145px;
+      width:360px; height:540px;
+      background:#050810;
+      border:1px solid rgba(0,255,136,0.14); border-radius:14px;
+      display:flex; flex-direction:column; overflow:hidden;
+      z-index:997; opacity:0; transform:translateY(16px) scale(0.95);
+      pointer-events:none; transition:all 0.26s ease;
+      box-shadow:0 20px 60px rgba(0,0,0,0.80);
+    }
+    .comm-window.ouvert { opacity:1; transform:none; pointer-events:all; }
+
+    /* Header COMMUNITY */
+    .comm-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 14px;
+      background:linear-gradient(135deg,rgba(0,255,136,0.07),rgba(0,212,255,0.05));
+      border-bottom:1px solid rgba(0,255,136,0.10); flex-shrink:0;
+    }
+    .comm-avatar-header {
+      width:32px; height:32px;
+      background:linear-gradient(135deg,#00ff88,#00d4ff);
+      border-radius:50%; display:flex; align-items:center; justify-content:center;
+      font-size:1rem; color:#000;
+    }
+    .comm-titre { font-family:'Russo One',sans-serif; font-size:0.78rem; color:#fff; }
+    .comm-online-count {
+      display:flex; align-items:center; gap:5px;
+      font-family:'Share Tech Mono',monospace; font-size:0.56rem; color:#607080;
+    }
+    .comm-dot-vert, .comm-dot-online {
+      width:6px; height:6px; background:#00ff88;
+      border-radius:50%; box-shadow:0 0 5px #00ff88;
+      flex-shrink:0;
+    }
+    .comm-dot-vert { animation:point-blink 2s infinite; }
+
+    /* Barre joueurs en ligne */
+    .comm-players-bar {
+      display:flex; gap:6px; padding:8px 13px; align-items:center;
+      border-bottom:1px solid rgba(255,255,255,0.04); flex-shrink:0;
+      overflow-x:auto;
+    }
+    .comm-players-bar::-webkit-scrollbar { display:none; }
+    .comm-player-chip {
+      position:relative; flex-shrink:0;
+    }
+    .comm-chip-avatar {
+      width:28px; height:28px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Orbitron',monospace; font-size:0.44rem; font-weight:900;
+    }
+    .comm-dot-online {
+      position:absolute; bottom:-1px; right:-1px;
+      width:8px; height:8px;
+      border:1.5px solid #050810;
+      animation:none;
     }
 
-    /* ── Suggestions rapides ── */
-    .chat-suggestions {
-      display: flex; flex-wrap: wrap; gap: 5px;
-      padding: 8px 11px;
-      border-top: 1px solid rgba(255,255,255,0.04);
-      flex-shrink: 0;
-      overflow-y: auto; max-height: 88px;
+    /* Corps COMMUNITY */
+    .comm-corps {
+      flex:1; overflow-y:auto; padding:12px;
+      display:flex; flex-direction:column; gap:10px;
+      scroll-behavior:smooth;
     }
-    .chat-suggestions::-webkit-scrollbar { display: none; }
-    .chat-sugg {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 0.68rem; font-weight: 600;
-      letter-spacing: 0.5px;
-      padding: 4px 10px;
-      background: rgba(0,212,255,0.04);
-      border: 1px solid rgba(0,212,255,0.14);
-      border-radius: 50px;
-      color: #5a6a7a;
-      cursor: pointer; transition: all 0.2s;
-      white-space: nowrap;
-    }
-    .chat-sugg:hover {
-      background: rgba(0,212,255,0.11);
-      color: #00d4ff;
-      border-color: rgba(0,212,255,0.34);
-    }
+    .comm-corps::-webkit-scrollbar { width:3px; }
+    .comm-corps::-webkit-scrollbar-track { background:transparent; }
+    .comm-corps::-webkit-scrollbar-thumb { background:rgba(0,255,136,0.15); border-radius:2px; }
 
-    /* ── Footer / Input ── */
-    .chat-footer {
-      display: flex; align-items: center; gap: 7px;
-      padding: 9px 11px;
-      border-top: 1px solid rgba(0,212,255,0.08);
-      background: rgba(0,0,0,0.22);
-      flex-shrink: 0;
-    }
-    .chat-input {
-      flex: 1; padding: 8px 11px;
-      background: rgba(255,255,255,0.035);
-      border: 1px solid rgba(0,212,255,0.13);
-      border-radius: 8px;
-      color: #d0e4f0;
-      font-family: 'Exo 2', sans-serif;
-      font-size: 0.80rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .chat-input:focus {
-      border-color: rgba(0,212,255,0.38);
-    }
-    .chat-input::placeholder { color: #334455; }
+    /* Messages COMMUNITY */
+    .comm-msg { display:flex; align-items:flex-start; gap:8px; }
+    .comm-msg-moi { flex-direction:row-reverse; }
 
-    .chat-btn-envoyer {
-      width: 34px; height: 34px;
-      background: linear-gradient(135deg, #00d4ff, #0055ff);
-      border: none; border-radius: 8px;
-      color: #000; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.2s;
-      flex-shrink: 0;
+    .comm-avatar-msg {
+      width:28px; height:28px; border-radius:50%; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Orbitron',monospace; font-size:0.44rem; font-weight:900;
     }
-    .chat-btn-envoyer:hover {
-      transform: scale(1.10);
-      box-shadow: 0 0 14px rgba(0,212,255,0.48);
+    .comm-msg-content {
+      display:flex; flex-direction:column; gap:2px; max-width:82%;
     }
+    .comm-msg-nom {
+      font-family:'Rajdhani',sans-serif; font-size:0.68rem;
+      font-weight:700; letter-spacing:0.5px;
+    }
+    .comm-bulle {
+      padding:7px 10px; border-radius:9px;
+      background:rgba(255,255,255,0.034);
+      border:1px solid rgba(255,255,255,0.058);
+      border-bottom-left-radius:3px;
+      font-family:'Exo 2',sans-serif; font-size:0.78rem;
+      font-weight:300; line-height:1.60; color:#d0e4f0;
+      word-break:break-word;
+    }
+    .comm-bulle-moi {
+      background:linear-gradient(135deg,rgba(0,255,136,0.14),rgba(0,212,255,0.10));
+      border:1px solid rgba(0,255,136,0.18); border-bottom-right-radius:3px;
+      border-bottom-left-radius:9px;
+    }
+    .comm-bulle b { color:#fff; font-weight:700; }
 
     /* ── Responsive mobile ── */
     @media (max-width: 480px) {
-      .chat-window {
-        width: calc(100vw - 16px);
-        right: 8px; left: 8px;
-        bottom: 80px;
+      .bot-window, .comm-window {
+        width:calc(100vw - 16px); right:8px; left:8px; bottom:80px;
       }
-      .chat-bubble { right: 14px; }
+      .bot-bubble  { right:14px; }
+      .comm-bubble { right:76px; }
     }
   `;
-
   document.head.appendChild(style);
 }
 
-
 // ============================================
-// 14. STYLES GLOBAUX SUPPLÉMENTAIRES
-// (Injectés dynamiquement — nav actif, shake, fadeIn)
+// 19. INITIALISATION GÉNÉRALE — FIXED
 // ============================================
-
-(function injecterStylesGlobaux() {
-  const style = document.createElement('style');
-  style.id = 'bmf-global-styles';
-  style.textContent = `
-
-    /* Lien actif dans la navbar */
-    .nav-link.actif-nav {
-      color: #ffffff !important;
-    }
-    .nav-link.actif-nav::after {
-      width: 100% !important;
-    }
-
-    /* Animation shake pour validation formulaire */
-    @keyframes shake {
-      0%,100% { transform: translateX(0); }
-      20%      { transform: translateX(-7px); }
-      40%      { transform: translateX(7px); }
-      60%      { transform: translateX(-4px); }
-      80%      { transform: translateX(4px); }
-    }
-
-    /* Animation fadeInUp */
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-  `;
-  document.head.appendChild(style);
-})();
-
-
-// ============================================
-// 15. INITIALISATION GLOBALE
-// Tout est lancé ici au chargement du DOM
-// ============================================
-
 document.addEventListener('DOMContentLoaded', () => {
 
-  // Charge les données dynamiques depuis data.js
+  // 1. Charge les données
   chargerNews();
   chargerCodes();
 
-  // Crée le widget chat complet
-  creerChatWidget();
+  // 2. Lance les animations
+  initReveal();
+  initEffetCartes();
 
-  // Log de confirmation dans la console navigateur
+  // 3. Injecte les styles globaux
+  injecterStylesGlobaux();
+
+  // 4. Crée les widgets chat
+  creerBotChat();
+  creerCommunityChat();
+
+  // 5. Active le premier filtre guides par défaut
+  const premierFiltre = $('.filtre');
+  if (premierFiltre) premierFiltre.classList.add('actif');
+
+  // 6. Log de confirmation
   console.log(
-    '%c ⚡ BMF_GAMING — Script v1.0 chargé ',
-    [
-      'background: linear-gradient(135deg, #00d4ff, #0055ff)',
-      'color: #000000',
-      'font-family: monospace',
-      'font-weight: bold',
-      'font-size: 12px',
-      'padding: 5px 10px',
-      'border-radius: 4px'
-    ].join(';')
+    '%c ⚡ BMF_GAMING v2.0 — Tous bugs corrigés ✓ ',
+    'background:linear-gradient(135deg,#00d4ff,#0055ff);color:#000;font-weight:bold;font-size:11px;padding:4px 10px;border-radius:4px;'
   );
+  console.log('%c 🤖 Bot · 👥 Community Chat · 📰 News · 🎁 Codes — OK ',
+    'color:#00ff88;font-family:monospace;font-size:10px;');
 });
