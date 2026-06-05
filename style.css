@@ -1,0 +1,1397 @@
+/* =====================================================
+   BMF_GAMING — style.css v3.0 PROFESSIONAL
+   Thème   : Grey Galaxy Fluorescent · Neon Pro
+   Palette : Cyan · Vert · Or · Argent · Rouge
+             ── AUCUN rose / violet ──
+   Polices :
+     Orbitron        → Brand & titres gaming
+     Cinzel Decorative → Style RUNE (Fantasy/RPG)
+     Rajdhani        → Style FPS/Militaire
+     Russo One       → Texte d'impact fort
+     Exo 2           → Corps de texte pro
+     Share Tech Mono → Codes / Stats / Chiffres
+   ===================================================== */
+
+/* ============================================
+   ⚠️ IMPORTANT — Mets à jour le lien Google
+   Fonts dans ton index.html par celui-ci :
+   https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Russo+One&family=Exo+2:wght@300;400;600;700;800&family=Share+Tech+Mono&display=swap
+   ============================================ */
+
+/* ============================================
+   1. VARIABLES GLOBALES
+   ============================================ */
+:root {
+  /* ── Couleurs Néon principales ── */
+  --cyan:         #00d4ff;   /* Cyan électrique — accent principal */
+  --cyan-dim:     #0088bb;   /* Cyan atténué */
+  --vert:         #00ff88;   /* Vert néon — succès / débutant */
+  --vert-dim:     #00bb66;   /* Vert atténué */
+  --or:           #ffd700;   /* Or — Tier S / premium */
+  --or-dim:       #cc9900;   /* Or atténué */
+  --rouge:        #ff3333;   /* Rouge — danger / avancé / hot */
+  --orange:       #ff7833;   /* Orange — énergie / codes */
+  --argent:       #b8ccd8;   /* Argent glacé — accent galaxy */
+  --argent-dim:   #6e8090;   /* Argent secondaire */
+
+  /* ── Fonds ── */
+  --bg:           #040407;          /* Espace quasi-noir */
+  --bg-alt:       #060609;          /* Sections alternées */
+  --surface:      rgba(10,12,20,0.88);  /* Cartes */
+  --surface-2:    rgba(13,15,25,0.92);  /* Surface secondaire */
+
+  /* ── Texte ── */
+  --text:         #d8e8f0;   /* Blanc-bleu glacé */
+  --text-dim:     #607080;   /* Gris-bleu secondaire */
+  --text-bright:  #ffffff;   /* Blanc pur */
+
+  /* ── Bordures ── */
+  --bord:         rgba(0,212,255,0.14);
+  --bord-vert:    rgba(0,255,136,0.14);
+  --bord-or:      rgba(255,215,0,0.16);
+  --bord-argent:  rgba(184,204,216,0.12);
+
+  /* ── Gradients ── */
+  --grad-cyan:    linear-gradient(135deg, #00d4ff 0%, #0077ff 100%);
+  --grad-vert:    linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
+  --grad-or:      linear-gradient(135deg, #ffd700 0%, #ff8800 100%);
+  --grad-rouge:   linear-gradient(135deg, #ff3333 0%, #ff7833 100%);
+  --grad-argent:  linear-gradient(135deg, #b8ccd8 0%, #7a9ab0 100%);
+
+  /* ── Glows ── */
+  --glow-cyan:    0 0 22px rgba(0,212,255,0.45);
+  --glow-vert:    0 0 22px rgba(0,255,136,0.42);
+  --glow-or:      0 0 22px rgba(255,215,0,0.44);
+  --glow-rouge:   0 0 22px rgba(255,51,51,0.40);
+
+  /* ── Polices — chacune a un rôle précis ── */
+  --f-brand:   'Orbitron', monospace;          /* Logo + titres UI gaming */
+  --f-rune:    'Cinzel Decorative', serif;     /* RUNE — sections Fantasy/RPG */
+  --f-fps:     'Rajdhani', sans-serif;         /* FPS/Militaire (COD, Fortnite) */
+  --f-impact:  'Russo One', sans-serif;        /* Impact — boutons, cartes */
+  --f-body:    'Exo 2', sans-serif;            /* Corps de texte principal */
+  --f-code:    'Share Tech Mono', monospace;   /* Codes, stats, chiffres */
+
+  /* ── Divers ── */
+  --radius:    10px;
+  --radius-sm: 6px;
+  --radius-lg: 18px;
+  --trans:     all 0.28s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ============================================
+   2. RESET UNIVERSEL
+   ============================================ */
+*, *::before, *::after {
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--f-body);
+  font-weight: 400;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+a      { text-decoration: none; color: inherit; transition: var(--trans); }
+ul     { list-style: none; }
+img    { max-width: 100%; display: block; }
+button { cursor: pointer; border: none; font-family: var(--f-body); }
+
+/* ============================================
+   3. 🌌 FOND GALAXIE GRIS FLUORESCENT
+   ─────────────────────────────────────────
+   Couche 1 (z:-2) : Champ d'étoiles argentées
+   Couche 2 (z:-1) : Nébuleuses grises + bras galactique
+   ============================================ */
+
+/* ── Couche 1 : Étoiles blanches / argentées ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+
+  background-image:
+    /* Étoiles minuscules (0.4px) — densité haute */
+    radial-gradient(circle at  2%  3%, rgba(220,234,248,0.82) 0.4px, transparent 0.4px),
+    radial-gradient(circle at  8% 10%, rgba(200,220,240,0.68) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 14%  2%, rgba(235,245,255,0.88) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 19%  8%, rgba(210,226,245,0.62) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 25%  4%, rgba(240,248,255,0.78) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 31% 12%, rgba(205,222,242,0.72) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 37%  6%, rgba(228,240,252,0.85) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 43%  1%, rgba(215,230,248,0.68) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 50%  9%, rgba(238,248,255,0.88) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 56%  4%, rgba(208,225,244,0.72) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 62% 10%, rgba(222,236,252,0.80) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 68%  3%, rgba(242,250,255,0.65) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 75%  8%, rgba(212,230,248,0.82) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 81%  2%, rgba(230,242,254,0.70) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 87% 10%, rgba(220,234,250,0.88) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 93%  6%, rgba(206,222,242,0.74) 0.4px, transparent 0.4px),
+    radial-gradient(circle at  5% 18%, rgba(228,240,254,0.78) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 12% 24%, rgba(215,232,250,0.64) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 18% 17%, rgba(240,250,255,0.84) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 24% 26%, rgba(202,220,240,0.70) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 30% 16%, rgba(230,242,254,0.88) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 36% 22%, rgba(214,230,248,0.74) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 42% 18%, rgba(236,246,255,0.80) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 48% 25%, rgba(222,236,252,0.64) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 54% 20%, rgba(210,228,246,0.84) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 60% 24%, rgba(234,244,255,0.70) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 66% 17%, rgba(218,234,250,0.88) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 73% 23%, rgba(244,252,255,0.74) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 80% 19%, rgba(206,224,244,0.80) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 86% 26%, rgba(226,240,254,0.64) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 92% 20%, rgba(216,232,250,0.84) 0.4px, transparent 0.4px),
+    radial-gradient(circle at 98% 24%, rgba(236,246,255,0.70) 0.4px, transparent 0.4px),
+    /* Étoiles petites (0.65px) */
+    radial-gradient(circle at  9% 34%, rgba(232,244,255,0.86) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 22% 38%, rgba(216,234,252,0.74) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 35% 32%, rgba(242,252,255,0.90) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 46% 40%, rgba(222,238,254,0.78) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 58% 35%, rgba(207,226,246,0.68) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 70% 41%, rgba(236,248,255,0.86) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 80% 36%, rgba(226,242,255,0.74) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 91% 38%, rgba(212,230,250,0.90) 0.65px, transparent 0.65px),
+    radial-gradient(circle at  4% 50%, rgba(240,250,255,0.78) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 17% 55%, rgba(220,236,254,0.68) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 28% 49%, rgba(232,245,255,0.86) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 40% 57%, rgba(210,228,248,0.74) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 51% 51%, rgba(242,252,255,0.90) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 63% 58%, rgba(224,240,255,0.78) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 74% 52%, rgba(214,232,252,0.68) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 85% 56%, rgba(236,248,255,0.86) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 97% 50%, rgba(226,242,254,0.74) 0.65px, transparent 0.65px),
+    radial-gradient(circle at  7% 66%, rgba(216,234,252,0.90) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 20% 71%, rgba(240,250,255,0.78) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 33% 65%, rgba(222,238,255,0.68) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 44% 72%, rgba(210,228,248,0.86) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 56% 67%, rgba(244,254,255,0.74) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 67% 73%, rgba(230,244,255,0.90) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 78% 68%, rgba(217,234,254,0.78) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 89% 74%, rgba(237,248,255,0.68) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 10% 82%, rgba(224,240,254,0.86) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 23% 85%, rgba(212,230,250,0.74) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 37% 80%, rgba(240,252,255,0.90) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 49% 87%, rgba(220,237,254,0.78) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 61% 82%, rgba(207,226,246,0.68) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 72% 88%, rgba(232,245,255,0.86) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 84% 83%, rgba(222,240,254,0.74) 0.65px, transparent 0.65px),
+    radial-gradient(circle at 96% 86%, rgba(242,252,255,0.90) 0.65px, transparent 0.65px),
+    /* Étoiles moyennes (1px) avec halo doux */
+    radial-gradient(circle at 16% 44%, rgba(255,255,255,0.94) 1px, rgba(200,220,240,0.10) 3px, transparent 4px),
+    radial-gradient(circle at 41% 21%, rgba(242,250,255,0.88) 1px, rgba(184,210,234,0.08) 3px, transparent 4px),
+    radial-gradient(circle at 64% 62%, rgba(255,255,255,0.94) 1px, rgba(200,224,244,0.10) 3px, transparent 4px),
+    radial-gradient(circle at 83% 38%, rgba(242,252,255,0.88) 1px, rgba(186,216,238,0.08) 3px, transparent 4px),
+    radial-gradient(circle at 29% 77%, rgba(255,255,255,0.94) 1px, rgba(196,218,240,0.10) 3px, transparent 4px),
+    radial-gradient(circle at 56% 91%, rgba(242,250,255,0.88) 1px, rgba(182,212,235,0.08) 3px, transparent 4px),
+    /* Étoiles brillantes cyan avec glow fort */
+    radial-gradient(circle at 34% 57%, rgba(0,212,255,0.80) 1.5px, rgba(0,212,255,0.08) 5px, transparent 7px),
+    radial-gradient(circle at 71% 28%, rgba(180,230,255,0.88) 1.5px, rgba(180,230,255,0.08) 5px, transparent 7px),
+    radial-gradient(circle at 11% 72%, rgba(0,180,220,0.75) 1.5px, rgba(0,180,220,0.06) 5px, transparent 7px),
+    radial-gradient(circle at 91% 58%, rgba(200,240,255,0.82) 1.5px, rgba(200,240,255,0.08) 5px, transparent 7px),
+    radial-gradient(circle at 51% 38%, rgba(0,200,245,0.78) 1.5px, rgba(0,200,245,0.06) 5px, transparent 7px);
+
+  animation: star-scintille 9s ease-in-out infinite alternate;
+}
+
+@keyframes star-scintille {
+  0%   { opacity: 0.52; }
+  38%  { opacity: 1.00; }
+  72%  { opacity: 0.68; }
+  100% { opacity: 0.58; }
+}
+
+/* ── Couche 2 : Nébuleuses grises fluorescentes ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+
+  background:
+    /* Bras galactique principal — diagonal lumineux */
+    linear-gradient(
+      116deg,
+      transparent               6%,
+      rgba(155,175,195, 0.016) 22%,
+      rgba(185,205,222, 0.038) 36%,
+      rgba(210,225,238, 0.058) 50%,
+      rgba(175,196,215, 0.038) 62%,
+      rgba(140,162,182, 0.018) 76%,
+      transparent              92%
+    ),
+    /* Bras secondaire */
+    linear-gradient(
+      50deg,
+      transparent               14%,
+      rgba(125,148,170, 0.011) 32%,
+      rgba(160,182,202, 0.026) 50%,
+      rgba(138,160,180, 0.016) 66%,
+      transparent               84%
+    ),
+    /* Halo central — nébuleuse fluorescente argentée */
+    radial-gradient(ellipse 42% 28% at 56% 44%,
+      rgba(148,178,206, 0.048) 0%,
+      rgba(120,152,180, 0.022) 40%,
+      transparent 70%
+    ),
+    /* Nuage lumineux nord-est */
+    radial-gradient(ellipse 36% 24% at 80% 16%,
+      rgba(165,192,218, 0.042) 0%,
+      transparent 62%
+    ),
+    /* Nuage lumineux sud-ouest */
+    radial-gradient(ellipse 40% 26% at 18% 82%,
+      rgba(132,162,190, 0.036) 0%,
+      transparent 58%
+    ),
+    /* Lueur centrale très subtile */
+    radial-gradient(ellipse 60% 40% at 50% 50%,
+      rgba(104,138,168, 0.018) 0%,
+      transparent 72%
+    ),
+    /* Bordure galactique haute */
+    radial-gradient(ellipse 80% 18% at 50% 0%,
+      rgba(120,150,178, 0.028) 0%,
+      transparent 60%
+    );
+
+  animation: nebula-drift 20s ease-in-out infinite alternate;
+}
+
+@keyframes nebula-drift {
+  0%   { opacity: 0.48; transform: scale(1.00) translateX(0px); }
+  50%  { opacity: 1.00; transform: scale(1.02) translateX(7px); }
+  100% { opacity: 0.58; transform: scale(0.99) translateX(-5px); }
+}
+
+/* ============================================
+   4. SCROLLBAR PERSONNALISÉE
+   ============================================ */
+::-webkit-scrollbar       { width: 5px; }
+::-webkit-scrollbar-track { background: #040407; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--cyan), var(--vert));
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
+
+/* ============================================
+   5. SÉLECTION DE TEXTE
+   ============================================ */
+::selection { background: rgba(0,212,255,0.26); color: var(--text-bright); }
+
+/* ============================================
+   6. BARRE D'ANNONCE
+   ── Police SHARE TECH MONO pour l'aspect "data stream"
+   ============================================ */
+.annonce-bar {
+  background: linear-gradient(90deg,
+    #040407 0%,
+    rgba(0,212,255,0.06) 30%,
+    rgba(0,255,136,0.05) 70%,
+    #040407 100%
+  );
+  border-bottom: 1px solid rgba(0,212,255,0.18);
+  padding: 8px 0;
+  font-family: var(--f-code);    /* ← Share Tech Mono */
+  font-size: 0.70rem;
+  color: var(--cyan);
+  letter-spacing: 1.8px;
+  position: relative;
+  z-index: 1001;
+}
+
+/* ============================================
+   7. NAVBAR
+   ── Logo Orbitron · Liens Rajdhani · Bouton Russo One
+   ============================================ */
+.navbar {
+  position: fixed;
+  top: 34px; left: 0; right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 44px;
+  height: 66px;
+  background: rgba(4, 4, 7, 0.82);
+  backdrop-filter: blur(30px) saturate(160%);
+  border-bottom: 1px solid var(--bord);
+  transition: var(--trans);
+}
+
+.navbar.scrolled {
+  top: 0;
+  background: rgba(4, 4, 7, 0.97);
+  box-shadow: 0 1px 0 var(--bord), 0 10px 36px rgba(0,0,0,0.7);
+}
+
+/* Logo — Orbitron */
+.navbar .logo {
+  font-family: var(--f-brand);
+  font-size: 1.32rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: var(--text-bright);
+}
+
+.navbar .logo span {
+  background: var(--grad-cyan);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Liens — Rajdhani style FPS */
+.nav-links { display: flex; align-items: center; gap: 28px; }
+
+.nav-link {
+  font-family: var(--f-fps);
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  position: relative;
+  padding-bottom: 2px;
+  transition: var(--trans);
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0;
+  width: 0; height: 1px;
+  background: var(--cyan);
+  box-shadow: 0 0 5px var(--cyan);
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover             { color: var(--text-bright); }
+.nav-link:hover::after      { width: 100%; }
+
+/* Bouton nav — Russo One */
+.btn-nav {
+  font-family: var(--f-impact);
+  font-size: 0.68rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  padding: 8px 22px;
+  background: transparent;
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  border-radius: var(--radius-sm);
+  transition: var(--trans);
+  cursor: pointer;
+}
+
+.btn-nav:hover {
+  background: var(--cyan);
+  color: #000;
+  box-shadow: var(--glow-cyan);
+  transform: translateY(-2px);
+}
+
+/* Burger mobile */
+.burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+.burger span {
+  display: block; width: 21px; height: 1.5px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: var(--trans);
+}
+
+/* ============================================
+   8. HERO
+   ── Titre Orbitron · Slogan Cinzel Decorative (RUNE)
+   ============================================ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 128px 60px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Grille en filigrane gris */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(184,204,216,0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(184,204,216,0.022) 1px, transparent 1px);
+  background-size: 50px 50px;
+  mask-image: radial-gradient(ellipse 60% 55% at 28% 52%, black 20%, transparent 80%);
+  pointer-events: none;
+}
+
+/* Ligne de scan */
+.hero::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0,212,255,0.42) 35%,
+    rgba(0,255,136,0.32) 65%,
+    transparent 100%
+  );
+  animation: scan-line 6s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes scan-line {
+  0%   { top: 8%;  opacity: 0; }
+  5%   { opacity: 1; }
+  92%  { opacity: 0.7; }
+  100% { top: 92%; opacity: 0; }
+}
+
+.hero-content { position: relative; z-index: 2; max-width: 630px; }
+
+/* Badge — Share Tech Mono */
+.hero-badge {
+  display: inline-block;
+  font-family: var(--f-code);
+  font-size: 0.66rem;
+  letter-spacing: 4px;
+  padding: 6px 18px;
+  background: rgba(0,212,255,0.05);
+  border: 1px solid rgba(0,212,255,0.28);
+  border-radius: 2px;
+  color: var(--cyan);
+  margin-bottom: 20px;
+  animation: badge-glow 3.5s ease-in-out infinite;
+}
+
+@keyframes badge-glow {
+  0%,100% { box-shadow: 0 0 0 0 rgba(0,212,255,0); }
+  50%      { box-shadow: 0 0 14px 0 rgba(0,212,255,0.22); }
+}
+
+/* Titre principal — Orbitron */
+.hero-titre {
+  font-family: var(--f-brand);
+  font-size: clamp(3rem, 8vw, 6.2rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -2px;
+  margin-bottom: 16px;
+  color: var(--text-bright);
+}
+
+.hero-titre span {
+  background: var(--grad-cyan);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Slogan — CINZEL DECORATIVE (RUNE) ← policeRUNE principale */
+.hero-slogan {
+  font-family: var(--f-rune);      /* ← RUNE : Cinzel Decorative */
+  font-size: 1.02rem;
+  letter-spacing: 6px;
+  color: var(--argent);
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  opacity: 0.80;
+  text-shadow: 0 0 16px rgba(184,204,216,0.38);
+}
+
+/* Description — Exo 2 légère */
+.hero-desc {
+  font-family: var(--f-body);
+  font-size: 0.98rem;
+  font-weight: 300;
+  line-height: 1.82;
+  color: var(--text-dim);
+  margin-bottom: 38px;
+  max-width: 550px;
+}
+
+.hero-desc strong { color: var(--text); font-weight: 600; }
+
+/* Boutons hero */
+.hero-btns { display: flex; gap: 13px; margin-bottom: 56px; flex-wrap: wrap; }
+
+/* Bouton plein — Russo One */
+.btn-primary {
+  display: inline-block;
+  font-family: var(--f-impact);
+  font-size: 0.80rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  padding: 13px 34px;
+  background: var(--grad-cyan);
+  color: #000;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: var(--trans);
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--glow-cyan);
+  filter: brightness(1.08);
+}
+
+/* Bouton contour — Russo One */
+.btn-ghost {
+  display: inline-block;
+  font-family: var(--f-impact);
+  font-size: 0.80rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  padding: 13px 34px;
+  background: transparent;
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--bord-argent);
+  transition: var(--trans);
+  cursor: pointer;
+}
+
+.btn-ghost:hover {
+  border-color: var(--vert);
+  color: var(--vert);
+  box-shadow: var(--glow-vert);
+  transform: translateY(-3px);
+}
+
+/* Stats hero — Share Tech Mono pour les chiffres */
+.hero-stats { display: flex; gap: 44px; flex-wrap: wrap; }
+
+.stat-item { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+
+.stat-nombre {
+  font-family: var(--f-code);       /* ← Share Tech Mono */
+  font-size: 2rem;
+  font-weight: 400;
+  color: var(--cyan);
+  text-shadow: 0 0 12px rgba(0,212,255,0.42);
+  line-height: 1;
+}
+
+.stat-label {
+  font-family: var(--f-fps);        /* ← Rajdhani */
+  font-size: 0.7rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* ============================================
+   HERO VISUEL — Emblème géométrique CSS pur
+   Sans emoji, sans mascotte
+   ============================================ */
+.hero-visuel {
+  position: relative;
+  width: 400px; height: 400px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.hero-emoji { display: none; } /* Cache l'emoji du HTML */
+
+/* Monogramme BMF central — Orbitron */
+.hero-visuel::before {
+  content: 'BMF';
+  position: absolute;
+  font-family: var(--f-brand);
+  font-size: 3.8rem;
+  font-weight: 900;
+  letter-spacing: 7px;
+  background: var(--grad-cyan);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  z-index: 4;
+  filter: drop-shadow(0 0 22px rgba(0,212,255,0.75));
+  animation: monogram-pulse 4.5s ease-in-out infinite;
+}
+
+@keyframes monogram-pulse {
+  0%,100% { filter: drop-shadow(0 0 14px rgba(0,212,255,0.48)); }
+  50%      { filter: drop-shadow(0 0 30px rgba(0,212,255,0.92)); }
+}
+
+/* Sous-texte — Cinzel Decorative (RUNE) */
+.hero-visuel::after {
+  content: '_GAMING';
+  position: absolute;
+  top: calc(50% + 52px);
+  font-family: var(--f-rune);   /* ← RUNE dans le visuel hero */
+  font-size: 0.68rem;
+  letter-spacing: 9px;
+  color: var(--argent);
+  opacity: 0.60;
+  z-index: 4;
+  animation: sous-texte 4s ease-in-out infinite alternate;
+}
+
+@keyframes sous-texte {
+  from { opacity: 0.35; }
+  to   { opacity: 0.75; }
+}
+
+/* Cercles orbitaux */
+.hero-cercle {
+  position: absolute;
+  border-radius: 50%;
+  animation: orbit-turn 10s linear infinite;
+}
+
+.cercle-1 {
+  width: 340px; height: 340px;
+  border: 1px solid rgba(184,204,216,0.12);
+}
+
+.cercle-2 {
+  width: 258px; height: 258px;
+  border: 1px solid rgba(0,212,255,0.14);
+  animation-direction: reverse;
+  animation-duration: 7s;
+}
+
+.cercle-3 {
+  width: 172px; height: 172px;
+  border: 1px solid rgba(0,255,136,0.12);
+  animation-duration: 4.5s;
+}
+
+@keyframes orbit-turn {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Points lumineux sur les cercles */
+.cercle-1::before, .cercle-2::before, .cercle-3::before {
+  content: '';
+  position: absolute;
+  top: -3px; left: 50%;
+  transform: translateX(-50%);
+  width: 6px; height: 6px;
+  border-radius: 50%;
+}
+
+.cercle-1::before { background: var(--argent); box-shadow: 0 0 8px var(--argent); }
+.cercle-2::before { background: var(--cyan);   box-shadow: 0 0 8px var(--cyan); }
+.cercle-3::before { background: var(--vert);   box-shadow: 0 0 8px var(--vert); }
+
+/* ============================================
+   9. SECTIONS — Styles communs
+   ============================================ */
+.section { padding: 94px 60px; }
+
+/* Sections alternées semi-opaques (fond galaxie visible par transparence) */
+.roblox-section,
+.tierlist-section,
+.news-section {
+  background: rgba(6, 6, 10, 0.78);
+  backdrop-filter: blur(4px);
+}
+
+/* En-tête de section */
+.section-header { text-align: center; margin-bottom: 54px; }
+
+/* Tag // ── Share Tech Mono */
+.section-tag {
+  display: inline-block;
+  font-family: var(--f-code);
+  font-size: 0.62rem;
+  letter-spacing: 4.5px;
+  color: var(--cyan);
+  margin-bottom: 10px;
+  opacity: 0.82;
+}
+
+/* Titre section — Orbitron par défaut */
+.section-header h2 {
+  font-family: var(--f-brand);
+  font-size: clamp(1.9rem, 4.5vw, 2.9rem);
+  font-weight: 900;
+  color: var(--text-bright);
+  margin-bottom: 13px;
+  letter-spacing: -0.5px;
+}
+
+.section-header h2 span {
+  background: var(--grad-cyan);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Titre TIER LIST — Cinzel Decorative (RUNE) */
+.tierlist-section .section-header h2 {
+  font-family: var(--f-rune);    /* ← RUNE pour Tier List */
+  letter-spacing: 4px;
+  font-size: clamp(1.7rem, 4vw, 2.5rem);
+}
+
+.section-header p,
+.section-desc {
+  font-family: var(--f-body);
+  font-size: 0.94rem;
+  font-weight: 300;
+  color: var(--text-dim);
+  max-width: 580px;
+  margin: 0 auto;
+  line-height: 1.76;
+}
+
+.section-desc { margin: -14px auto 38px; text-align: center; }
+
+/* ============================================
+   10. GRILLE DES JEUX
+   ============================================ */
+.jeux-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ── Carte Jeu ── */
+.jeu-card {
+  background: var(--surface);
+  border: 1px solid var(--bord);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  backdrop-filter: blur(16px);
+  transition: var(--trans);
+}
+
+/* Ligne lumineuse en haut de carte */
+.jeu-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,212,255,0.32), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.jeu-card:hover::before  { opacity: 1; }
+
+.jeu-card:hover {
+  transform: translateY(-7px);
+  border-color: rgba(0,212,255,0.32);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.50), var(--glow-cyan);
+}
+
+.jeu-card.coming-soon { border-style: dashed; opacity: 0.62; }
+.jeu-card.coming-soon:hover { opacity: 1; }
+
+/* Icône — conteneur stylisé, emoji légèrement grisé */
+.jeu-icon {
+  width: 50px; height: 50px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(184,204,216,0.05);
+  border: 1px solid rgba(184,204,216,0.14);
+  border-radius: 10px;
+  font-size: 1.6rem;
+  line-height: 1;
+  filter: grayscale(0.35) drop-shadow(0 0 5px rgba(0,212,255,0.25));
+  transition: var(--trans);
+}
+
+.jeu-card:hover .jeu-icon {
+  filter: grayscale(0) drop-shadow(0 0 10px rgba(0,212,255,0.50));
+  background: rgba(0,212,255,0.08);
+  border-color: rgba(0,212,255,0.28);
+}
+
+/* Titre carte — Russo One */
+.jeu-card h3 {
+  font-family: var(--f-impact);
+  font-size: 0.98rem;
+  color: var(--text-bright);
+  letter-spacing: 0.5px;
+}
+
+/* Description carte — Exo 2 Light */
+.jeu-card p {
+  font-family: var(--f-body);
+  font-size: 0.84rem;
+  font-weight: 300;
+  color: var(--text-dim);
+  line-height: 1.62;
+  flex: 1;
+}
+
+/* ── Tags ── */
+.card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+
+.tag {
+  font-family: var(--f-fps);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 3px;
+  border: 1px solid;
+}
+
+.tag.guide    { color: var(--cyan);   border-color: rgba(0,212,255,0.26);  background: rgba(0,212,255,0.04);  }
+.tag.tips     { color: var(--vert);   border-color: rgba(0,255,136,0.26);  background: rgba(0,255,136,0.04);  }
+.tag.debutant { color: var(--vert);   border-color: rgba(0,255,136,0.26);  background: rgba(0,255,136,0.04);  }
+.tag.avance   { color: var(--rouge);  border-color: rgba(255,51,51,0.26);  background: rgba(255,51,51,0.04);  }
+.tag.tierlist { color: var(--or);     border-color: rgba(255,215,0,0.26);  background: rgba(255,215,0,0.04);  }
+.tag.codes    { color: var(--orange); border-color: rgba(255,120,51,0.26); background: rgba(255,120,51,0.04); }
+
+/* Barre de progression */
+.card-progression {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--f-code);
+  font-size: 0.68rem;
+  color: var(--text-dim);
+}
+
+.barre-prog {
+  flex: 1; height: 3px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 2px; overflow: hidden;
+}
+
+.barre-fill {
+  height: 100%; width: var(--largeur);
+  background: var(--grad-cyan);
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(0,212,255,0.55);
+  animation: prog-in 1.6s ease-out forwards;
+}
+
+@keyframes prog-in { from { width: 0; } }
+
+/* Bouton carte — Rajdhani */
+.btn-card {
+  display: inline-block;
+  font-family: var(--f-fps);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 9px 18px;
+  background: transparent;
+  border: 1px solid var(--bord);
+  color: var(--cyan);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  transition: var(--trans);
+  margin-top: auto;
+}
+
+.btn-card:hover {
+  background: var(--grad-cyan);
+  border-color: transparent;
+  color: #000;
+  transform: translateX(3px);
+}
+
+/* ============================================
+   11. SECTION GUIDES
+   ── Filtres Rajdhani · Niveau Share Tech Mono
+   ============================================ */
+.filtres {
+  display: flex; gap: 9px;
+  justify-content: center; flex-wrap: wrap;
+  margin-bottom: 44px;
+}
+
+.filtre {
+  font-family: var(--f-fps);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  padding: 8px 21px;
+  background: var(--surface);
+  border: 1px solid var(--bord);
+  color: var(--text-dim);
+  border-radius: 3px;
+  transition: var(--trans);
+  cursor: pointer;
+}
+
+.filtre:hover, .filtre.actif {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: var(--glow-cyan);
+  background: rgba(0,212,255,0.04);
+}
+
+.guides-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.guide-card {
+  background: var(--surface);
+  border: 1px solid var(--bord);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex; flex-direction: column; gap: 10px;
+  backdrop-filter: blur(16px);
+  transition: var(--trans);
+}
+
+.guide-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(0,212,255,0.30);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.44), var(--glow-cyan);
+}
+
+/* Badge niveau — Share Tech Mono */
+.guide-niveau {
+  display: inline-block;
+  font-family: var(--f-code);
+  font-size: 0.57rem;
+  letter-spacing: 2.5px;
+  padding: 3px 10px;
+  border-radius: 2px;
+}
+
+.guide-niveau.avance   { background: rgba(255,51,51,0.08);  color: var(--rouge); border: 1px solid rgba(255,51,51,0.26); }
+.guide-niveau.debutant { background: rgba(0,255,136,0.08);  color: var(--vert);  border: 1px solid rgba(0,255,136,0.26); }
+
+.guide-card h4 {
+  font-family: var(--f-impact);
+  font-size: 0.88rem;
+  color: var(--text-bright);
+  line-height: 1.4;
+}
+
+.guide-card p     { font-family: var(--f-body); font-size: 0.84rem; font-weight: 300; color: var(--text-dim); line-height: 1.62; flex: 1; }
+.guide-meta       { display: flex; gap: 13px; font-family: var(--f-code); font-size: 0.70rem; color: var(--text-dim); flex-wrap: wrap; }
+.guide-card.cache { display: none; }
+
+.btn-guide {
+  display: inline-block;
+  font-family: var(--f-fps);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 9px 18px;
+  background: rgba(0,212,255,0.04);
+  border: 1px solid var(--bord);
+  color: var(--cyan);
+  border-radius: var(--radius-sm);
+  transition: var(--trans);
+  margin-top: auto;
+}
+
+.btn-guide:hover { background: var(--cyan); color: #000; transform: translateX(3px); box-shadow: var(--glow-cyan); }
+
+/* ============================================
+   12. TIER LIST
+   ── Titres Cinzel Decorative (RUNE) ← Prominent
+   ── Items Rajdhani
+   ============================================ */
+.tierlist-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.tierlist-card {
+  background: var(--surface);
+  border: 1px solid var(--bord);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex; flex-direction: column; gap: 10px;
+  backdrop-filter: blur(16px);
+  transition: var(--trans);
+}
+
+.tierlist-card:hover { border-color: rgba(0,212,255,0.30); box-shadow: var(--glow-cyan); }
+
+/* Titre tier card — CINZEL DECORATIVE (RUNE) ← le plus lisible */
+.tierlist-card h4 {
+  font-family: var(--f-rune);   /* ← RUNE : Cinzel Decorative */
+  font-size: 0.86rem;
+  color: var(--text-bright);
+  margin-bottom: 6px;
+  letter-spacing: 1.5px;
+}
+
+.tier { display: flex; align-items: center; gap: 8px; }
+
+.tier-label {
+  font-family: var(--f-brand);
+  font-size: 1.15rem;
+  font-weight: 900;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 5px;
+  flex-shrink: 0;
+}
+
+/* Tier S Or, A Cyan, B Vert, C Gris */
+.tier-s .tier-label { background: var(--grad-or);   color: #000; box-shadow: 0 0 10px rgba(255,215,0,0.35); }
+.tier-a .tier-label { background: var(--grad-cyan); color: #000; box-shadow: 0 0 10px rgba(0,212,255,0.35); }
+.tier-b .tier-label { background: var(--grad-vert); color: #000; box-shadow: 0 0 10px rgba(0,255,136,0.35); }
+.tier-c .tier-label { background: rgba(255,255,255,0.06); color: var(--text-dim); }
+
+.tier-items { display: flex; gap: 5px; flex-wrap: wrap; flex: 1; }
+
+.tier-item {
+  font-family: var(--f-fps);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 3px;
+  color: var(--text);
+  transition: var(--trans);
+}
+
+.tier-item:hover { background: rgba(0,212,255,0.08); border-color: rgba(0,212,255,0.26); color: var(--cyan); }
+
+/* ============================================
+   13. CODES GRATUITS
+   ── Valeurs Share Tech Mono · Jeu Rajdhani
+   ============================================ */
+.codes-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.code-card {
+  background: var(--surface);
+  border: 1px solid var(--bord-vert);
+  border-radius: var(--radius);
+  padding: 18px;
+  display: flex; flex-direction: column; gap: 8px;
+  backdrop-filter: blur(16px);
+  transition: var(--trans);
+}
+
+.code-card:hover {
+  border-color: rgba(0,255,136,0.38);
+  box-shadow: var(--glow-vert);
+  transform: translateY(-4px);
+}
+
+.code-jeu    { font-family: var(--f-fps); font-size: 0.68rem; font-weight: 700; letter-spacing: 2px; color: var(--vert); text-transform: uppercase; }
+
+.code-valeur {
+  font-family: var(--f-code);
+  font-size: 0.90rem;
+  color: var(--text-bright);
+  background: rgba(0,255,136,0.04);
+  padding: 7px 11px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--bord-vert);
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: var(--trans);
+}
+
+.code-valeur:hover { background: rgba(0,255,136,0.10); }
+.code-recompense   { font-family: var(--f-body); font-size: 0.78rem; font-weight: 300; color: var(--text-dim); }
+.code-expire       { font-family: var(--f-code); font-size: 0.66rem; color: var(--rouge); }
+
+/* ============================================
+   14. NEWS
+   ── Catégorie Share Tech Mono · Titre Russo One
+   ============================================ */
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.news-card {
+  background: var(--surface);
+  border: 1px solid var(--bord);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex; flex-direction: column; gap: 10px;
+  backdrop-filter: blur(16px);
+  transition: var(--trans);
+}
+
+.news-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(0,212,255,0.28);
+  box-shadow: var(--glow-cyan);
+}
+
+.news-categorie { font-family: var(--f-code); font-size: 0.62rem; letter-spacing: 3.5px; text-transform: uppercase; color: var(--cyan); }
+.news-card h4   { font-family: var(--f-impact); font-size: 0.88rem; color: var(--text-bright); line-height: 1.4; }
+.news-card p    { font-family: var(--f-body); font-size: 0.84rem; font-weight: 300; color: var(--text-dim); line-height: 1.62; flex: 1; }
+.news-date      { font-family: var(--f-code); font-size: 0.68rem; color: var(--text-dim); padding-top: 9px; border-top: 1px solid rgba(255,255,255,0.04); }
+
+/* ============================================
+   15. CONTACT
+   ============================================ */
+.contact-section { background: rgba(6,6,10,0.80); backdrop-filter: blur(4px); }
+
+.contact-inner {
+  max-width: 570px; margin: 0 auto; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 20px;
+}
+
+.contact-inner h2 {
+  font-family: var(--f-brand);
+  font-size: clamp(1.8rem, 3.8vw, 2.6rem);
+  color: var(--text-bright);
+}
+
+.contact-inner h2 span {
+  background: var(--grad-cyan);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.contact-inner > p { font-family: var(--f-body); font-weight: 300; color: var(--text-dim); font-size: 0.94rem; line-height: 1.74; }
+
+.contact-form { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+
+.contact-form input {
+  width: 100%;
+  padding: 12px 17px;
+  background: var(--surface-2);
+  border: 1px solid var(--bord);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--f-body);
+  font-size: 0.94rem;
+  outline: none;
+  transition: var(--trans);
+}
+
+.contact-form input:focus       { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(0,212,255,0.09); }
+.contact-form input::placeholder { color: var(--text-dim); }
+.contact-form .btn-primary       { width: 100%; padding: 14px; font-size: 0.80rem; }
+
+.confirmation {
+  font-family: var(--f-code);
+  font-size: 0.86rem;
+  color: var(--vert);
+  padding: 11px 20px;
+  background: rgba(0,255,136,0.05);
+  border: 1px solid rgba(0,255,136,0.20);
+  border-radius: var(--radius-sm);
+  width: 100%; text-align: center; letter-spacing: 1px;
+}
+
+.socials { display: flex; gap: 9px; flex-wrap: wrap; justify-content: center; }
+
+.social-btn {
+  font-family: var(--f-fps);
+  font-size: 0.76rem; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 8px 20px;
+  border-radius: 3px;
+  border: 1px solid var(--bord);
+  background: var(--surface);
+  color: var(--text-dim);
+  transition: var(--trans);
+}
+
+.social-btn.discord:hover { border-color: #5865f2; color: #5865f2; box-shadow: 0 0 13px rgba(88,101,242,0.25); }
+.social-btn.youtube:hover { border-color: #ff2020; color: #ff2020; box-shadow: 0 0 13px rgba(255,32,32,0.25); }
+.social-btn.twitter:hover { border-color: #1da1f2; color: #1da1f2; box-shadow: 0 0 13px rgba(29,161,242,0.25); }
+.social-btn.tiktok:hover  { border-color: var(--or); color: var(--or); box-shadow: var(--glow-or); }
+
+/* ============================================
+   16. FOOTER
+   ── Sous-titres Cinzel Decorative (RUNE)
+   ── Body Exo 2 Light
+   ============================================ */
+.footer {
+  background: rgba(2,2,4,0.98);
+  border-top: 1px solid var(--bord);
+  padding: 54px 60px 26px;
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 54px;
+  margin-bottom: 34px;
+  padding-bottom: 34px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.footer-brand .logo {
+  font-family: var(--f-brand);
+  font-size: 1.55rem; font-weight: 900; letter-spacing: 3px;
+  color: var(--text-bright); margin-bottom: 13px; display: block;
+}
+
+.footer-brand .logo span {
+  background: var(--grad-cyan);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.footer-brand p { font-family: var(--f-body); font-size: 0.86rem; font-weight: 300; color: var(--text-dim); line-height: 1.72; max-width: 320px; }
+
+/* Titres colonnes — CINZEL DECORATIVE (RUNE) ← footer */
+.footer-liens h4, .footer-jeux h4 {
+  font-family: var(--f-rune);   /* ← RUNE dans le footer */
+  font-size: 0.72rem;
+  letter-spacing: 3px;
+  color: var(--argent);
+  margin-bottom: 17px;
+  text-transform: uppercase;
+}
+
+.footer-liens ul li, .footer-jeux ul li { margin-bottom: 9px; }
+
+.footer-liens a      { font-family: var(--f-body); font-size: 0.84rem; font-weight: 300; color: var(--text-dim); transition: var(--trans); }
+.footer-liens a:hover { color: var(--cyan); padding-left: 5px; }
+.footer-jeux ul li   { font-family: var(--f-body); font-size: 0.84rem; font-weight: 300; color: var(--text-dim); }
+
+.footer-bottom { text-align: center; display: flex; flex-direction: column; gap: 5px; }
+.footer-bottom p { font-family: var(--f-code); font-size: 0.76rem; color: var(--text-dim); }
+
+.footer-bottom strong {
+  background: var(--grad-cyan);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
+   17. BOUTON TOP
+   ============================================ */
+.btn-top {
+  position: fixed;
+  bottom: 26px; right: 26px;
+  width: 42px; height: 42px;
+  background: var(--surface);
+  border: 1px solid var(--bord);
+  color: var(--cyan);
+  font-family: var(--f-fps);
+  font-size: 0.9rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  opacity: 0; visibility: hidden;
+  transition: var(--trans);
+  z-index: 999;
+}
+
+.btn-top.visible { opacity: 1; visibility: visible; }
+.btn-top:hover   { background: var(--cyan); color: #000; box-shadow: var(--glow-cyan); transform: translateY(-3px); }
+
+/* ============================================
+   18. ANIMATION SCROLL
+   ============================================ */
+.apparition {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+.apparition.visible { opacity: 1; transform: translateY(0); }
+
+/* ============================================
+   19. RESPONSIVE — TABLETTE (max 1024px)
+   ============================================ */
+@media (max-width: 1024px) {
+  .jeux-grid                                  { grid-template-columns: repeat(2, 1fr); }
+  .tierlist-grid, .guides-grid, .news-grid    { grid-template-columns: repeat(2, 1fr); }
+  .codes-grid                                 { grid-template-columns: repeat(2, 1fr); }
+  .footer-top                                 { grid-template-columns: 1fr 1fr; gap: 34px; }
+  .footer-brand                               { grid-column: span 2; }
+  .hero-visuel                                { width: 300px; height: 300px; }
+  .cercle-1                                   { width: 260px; height: 260px; }
+  .cercle-2                                   { width: 195px; height: 195px; }
+  .cercle-3                                   { width: 130px; height: 130px; }
+}
+
+/* ============================================
+   20. RESPONSIVE — MOBILE (max 768px)
+   ============================================ */
+@media (max-width: 768px) {
+  .navbar { padding: 0 18px; top: 32px; }
+
+  .nav-links {
+    display: none;
+    position: absolute; top: 66px; left: 0; right: 0;
+    background: rgba(4,4,7,0.98);
+    flex-direction: column; padding: 16px; gap: 13px;
+    border-bottom: 1px solid var(--bord);
+    backdrop-filter: blur(28px);
+  }
+
+  .nav-links.ouvert { display: flex; }
+  .burger           { display: flex; }
+  .btn-nav          { display: none; }
+
+  .hero {
+    flex-direction: column;
+    padding: 110px 20px 54px;
+    text-align: center;
+  }
+
+  .hero-visuel { display: none; }
+  .hero-btns   { justify-content: center; }
+  .hero-stats  { justify-content: center; gap: 20px; }
+
+  .section { padding: 54px 20px; }
+
+  .jeux-grid, .tierlist-grid, .guides-grid,
+  .news-grid, .codes-grid { grid-template-columns: 1fr; }
+
+  .footer       { padding: 34px 20px 20px; }
+  .footer-top   { grid-template-columns: 1fr; gap: 26px; }
+  .footer-brand { grid-column: span 1; }
+}
+
+/* ============================================
+   21. RESPONSIVE — TRÈS PETIT (max 480px)
+   ============================================ */
+@media (max-width: 480px) {
+  .hero-titre  { font-size: 2.3rem; }
+  .hero-slogan { font-size: 0.86rem; letter-spacing: 3px; }
+  .filtres     { gap: 6px; }
+  .filtre      { padding: 7px 13px; font-size: 0.72rem; }
+}
